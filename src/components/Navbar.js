@@ -42,7 +42,7 @@ function Navbar() {
     const handleCollectionsOrReturns = async (action) => {
         try {
           // Call the API to check loan details
-          const response = await fetch(`http://localhost:5000/api/loan-details/${loanID}`);
+          const response = await fetch(`https://express-server-1.fly.dev/api/loan-details/${loanID}`);
       
           if (response.status === 404) {
             // Loan not found, handle the error (e.g., display a message)
