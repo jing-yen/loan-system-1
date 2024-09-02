@@ -3,7 +3,10 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NewBorrowForm from './components/NewBorrowForm';
+import NewCollectForm from './components/NewCollectForm';
+import NewReturnForm from './components/NewReturnForm';
 import { CartProvider } from './components/CartContext'; // Import the provider
+import LoanDashboard from './pages/Dashboard';
 
 
 function App() {
@@ -15,6 +18,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/new-borrow-form" element={<NewBorrowForm />} />
+            <Route path="/new-collect-form" element={<NewCollectForm />} />
+            <Route path="/new-return-form" element={<NewReturnForm />} />
+            <Route path="/dashboard" element={<LoanDashboard/>} />
           </Routes>
         </Router>
       </CartProvider>
