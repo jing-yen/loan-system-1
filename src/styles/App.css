@@ -235,3 +235,19 @@ p {
 .scrollToTop-btn:hover {
   background-color: #0056b3;
 }
+
+.action-container {
+  display: flex;
+  justify-content: space-between; /* Spreads the items with space between */
+  width: 100%;
+}
+
+.action-item {
+  width: 48%; /* Each item takes up approximately 50% of the container */
+  box-sizing: border-box; /* Includes padding and borders in the width */
+  background-color: #f9f9f9; /* Optional: Add background color */
+  padding: 20px; /* Optional: Add padding for spacing */
+  text-align: center; /* Optional: Center-align text */
+  border-radius: 10px; /* Optional: Add rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
+}
