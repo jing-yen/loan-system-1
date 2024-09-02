@@ -10,13 +10,75 @@ const defaultImageUrl = `/assets/default.jpg`;
 
 function Navbar() {
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isReturnsOpen, setIsReturnsOpen] = useState(false);
+    const [isCollectionsOpen, setIsCollectionsOpen] = useState(false);
+
     let navigate = useNavigate();
+
     const { cart, setCart } = useCart(); // Use useCart here
+    const [ loanID, setLoanID ] = useState(0);
     let location = useLocation();
 
+    const toggleCollections = () => {
+        setIsCollectionsOpen(!isCollectionsOpen);
+        setIsCartOpen(false);
+        setIsReturnsOpen(false);
+        setLoanID(0);
+    };
+
+    const toggleReturns = () => {
+        setIsReturnsOpen(!isReturnsOpen);
+        setIsCartOpen(false);
+        setIsCollectionsOpen(false);
+        setLoanID(0);
+    };
 
     const toggleCart = () => {
         setIsCartOpen(!isCartOpen);
+        setIsCollectionsOpen(false);
+        setIsReturnsOpen(false);
+    };
+
+    const handleCollectionsOrReturns = async (action) => {
+        try {
+          // Call the API to check loan details
+          const response = await fetch(`http://localhost:5000/api/loan-details/${loanID}`);
+      
+          if (response.status === 404) {
+            // Loan not found, handle the error (e.g., display a message)
+            alert('Loan not found');
+            // You might want to display an error message to the user here
+            return; // Stop further execution
+          }
+
+          // Parse the response as JSON
+          const loanDetails = await response.json();
+
+          // Now you have the loan details in the `loanDetails` variable
+          console.log('Loan Details:', loanDetails);
+
+          // If the loan items are already collected
+          if (action == 'collect' && loanDetails.status != 'Reserved') {
+            alert('Loan items are already collected');
+            return; // Stop further execution
+          }
+
+          // If the loan items are already returned, or not collected yet
+          if (action == 'return' && loanDetails.status != 'Borrowed') {
+            alert('Loan items are already returned, or not collected yet');
+            return; // Stop further execution
+        }
+      
+          // If the API call is successful (status code is not 404)
+          setIsCollectionsOpen(false);
+          setIsReturnsOpen(false);
+          navigate(action=='collect' ? '/new-collect-form': '/new-return-form', { state: { loanDetails: loanDetails } });
+      
+        } catch (error) {
+          // Handle any errors that occur during the API call
+          console.error('Error checking loan details:', error);
+          // You might want to display a generic error message to the user here
+        }
     };
 
     const removeFromCart = (indexToRemove) => {
@@ -41,12 +103,42 @@ function Navbar() {
             </div>
             <div className="rightSide">
                 <Link to="/">Home</Link>
+                <div className="cart-icon" onClick={toggleCollections}>
+                    Collections
+                </div>
+                {isCollectionsOpen && (
+                    <div className="cart-dropdown">
+                        <div className="cart-header">📦 Collection: Loan ID</div>
+                        <input
+                                type='number'
+                                value={loanID}
+                                onChange={(e) => setLoanID(e.target.value)}
+                                className="loan-id-input"
+                            />
+                        <button className="checkout-button" onClick={()=>handleCollectionsOrReturns('collect')}>Collect Now</button>
+                    </div>
+                )}
+                <div className="cart-icon" onClick={toggleReturns}>
+                    Returns
+                </div>
+                {isReturnsOpen && (
+                    <div className="cart-dropdown">
+                        <div className="cart-header">↩️ Returns: Loan ID</div>
+                        <input
+                                type='number'
+                                value={loanID}
+                                onChange={(e) => setLoanID(e.target.value)}
+                                className="loan-id-input"
+                            />
+                        <button className="checkout-button" onClick={()=>handleCollectionsOrReturns('return')}>Return Now</button>
+                    </div>
+                )}
                 <div className="cart-icon" onClick={toggleCart}>
                     Cart ({cart.length})
                 </div>
                 {isCartOpen && (
                     <div className="cart-dropdown">
-                        <div className="cart-header">My Cart</div>
+                        <div className="cart-header">🛒 My Cart</div>
                         {cart.map((item, index) => (
                             <div key={index} className="cart-item" style={{ position: 'relative' }}>
                                 <img src={item.imageUrl || defaultImageUrl} alt={item.item_name} style={{ width: '70px', height: '70px', borderRadius: '8px' }} />
@@ -66,6 +158,7 @@ function Navbar() {
                                 )}
                             </div>
                         ))}
+                        {cart.length === 0 && <p style={{ marginTop: '1rem' }} className='cart'>No items in cart.</p>}
                         <button className="checkout-button" onClick={handleCheckout}>Checkout</button>
                     </div>
                 )}
