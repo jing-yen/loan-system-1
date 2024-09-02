@@ -93,12 +93,12 @@ const LoanDashboard = () => {
 
   useEffect(() => {
     // Fetch loan transactions from the API
-    fetch('http://localhost:5000/api/loan-transactions')
+    fetch('https://express-server-1.fly.dev/api/loan-transactions')
       .then(response => response.json())
       .then(data => setLoanTransactions(data.sort((a,b)=>{return b['transaction_id']-a['transaction_id']})))
       .catch(error => console.error('Error fetching loan transactions:', error));
       
-    fetch('http://localhost:5000/api/inventory')
+    fetch('https://express-server-1.fly.dev/api/inventory')
         .then(response => response.json())
         .then(data => setInventoryData(data))
         .catch(error => console.error('Error fetching inventory:', error));

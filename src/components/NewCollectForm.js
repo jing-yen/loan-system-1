@@ -9,7 +9,7 @@ function NewCollectForm() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
-
+    const [verifiedByStaff, setVerifiedByStaff] = useState(false);
 
     const [formData, setFormData] = useState({
         phone: '',
@@ -41,6 +41,11 @@ function NewCollectForm() {
     const validateForm = () => {
         let isValid = true;
         let newErrors = {};
+
+        if (!verifiedByStaff) {
+            newErrors['verify'] = 'Get a staff to verify your collection';
+            isValid = false;
+        }
 
         Object.keys(formData).forEach(key => {
             if ((key === 'phone') && formData[key].trim() != loanDetails.student_phone) {
@@ -86,7 +91,7 @@ function NewCollectForm() {
                 };
 
                 console.log('Submitting form with data:', formDataToSend);
-                await axios.post('http://localhost:5000/api/loan-status/update', formDataToSend);
+                await axios.post('https://express-server-1.fly.dev/api/loan-status/update', formDataToSend);
                 setIsSubmitted(true); // Set this on successful submission
             } catch (error) {
                 console.error('Error submitting form:', error);
@@ -99,52 +104,45 @@ function NewCollectForm() {
         }
     };
 
-    const base64ToArrayBuffer = (base64) => {
-        const binaryString = window.atob(base64);
-        const len = binaryString.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-        return bytes.buffer;
-    };
-
-    const requestScreenLock = async () => {
+    const registerCredential = async () => {
         try {
-            // Replace this with an actual base64-encoded credential ID
-            const credentialId = 'dummyCredentialIdBase64'; 
-
-            const publicKeyCredentialRequestOptions = {
-                challenge: new Uint8Array([0x8C, 0xFA, 0xB3, 0xA9, 0x42, 0xF5, 0x89, 0xDE]), // Random example challenge
-                allowCredentials: [{
-                    id: base64ToArrayBuffer(credentialId),
-                    transports: ['internal'],
-                    type: 'public-key'
-                }],
-                timeout: 60000, // 1 minute
-                userVerification: 'required',
+            const publicKeyCredentialCreationOptions = {
+                challenge: new Uint8Array([0x8C, 0xFA, 0xB3, 0xA9, 0x42, 0xF5, 0x89, 0xDE]), // Example challenge
+                rp: { name: "Your App Name" },
+                user: {
+                    id: new Uint8Array(16), // User ID in Uint8Array form, must be unique per user
+                    name: "username@example.com",
+                    displayName: "User Name"
+                },
+                pubKeyCredParams: [
+                    { alg: -7, type: "public-key" }, // ES256
+                    { alg: -257, type: "public-key" } // RS256
+                ],
+                authenticatorSelection: {
+                    authenticatorAttachment: "platform",
+                    userVerification: "required"
+                },
+                timeout: 60000,
+                attestation: "direct",
             };
-
-            const credential = await navigator.credentials.get({
-                publicKey: publicKeyCredentialRequestOptions
+    
+            const credential = await navigator.credentials.create({
+                publicKey: publicKeyCredentialCreationOptions
             });
-
+    
             if (credential) {
-                console.log('Screen lock or biometric authentication successful.');
-                alert('Authentication successful!'); // Display success message
-                // You can perform additional actions here, such as granting access
+                console.log('Credential registered:', credential);
+                setVerifiedByStaff(true);
+                // Store the credential ID securely for future use
+                const credentialId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+                console.log('Credential ID:', credentialId);
+                // Store this credentialId in your localStorage or server
             }
         } catch (err) {
-            if (err.name === 'NotAllowedError') {
-                console.error('Authentication was not allowed or timed out. Please ensure you interacted with the prompt.');
-            } else if (err.name === 'SecurityError') {
-                console.error('A security error occurred. This could be due to an insecure context or another security policy.');
-            } else {
-                console.error('Authentication failed:', err);
-            }
-            alert('Authentication failed or timed out. Please try again.');
+            console.error('Credential registration failed:', err);
         }
-    }
+    };
+    
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -163,17 +161,17 @@ function NewCollectForm() {
             <h2>{loanDetails.student_name}</h2>
             <div className="selected-items">
                 {loanDetails?.loan_items?.length > 0 ? (
-                    <ul className="selected-items-list">
+                    <ol className="selected-items-list">
                         {loanDetails.loan_items.map((item, index) => (
                             <li key={index}>{item.item_name} (Qty: {item.quantity})</li>
                         ))}
-                    </ul>
+                    </ol>
                 ) : (
                     <p onClick={console.log(loanDetails)}>No items selected.</p>
                 )}
             </div>
-            <h4>Loan Period: {new Date(loanDetails.start_usage_date).toLocaleDateString()} to {new Date(loanDetails.end_usage_date).toLocaleDateString()}</h4>
-            <button onClick={requestScreenLock}>Unlock with Screen Lock</button>
+            <h4>📆: {new Date(loanDetails.start_usage_date).toLocaleDateString()} to {new Date(loanDetails.end_usage_date).toLocaleDateString()}</h4>
+            
             <hr/>
             <form onSubmit={handleSubmit}>
                 {Object.keys(formData).map((key, index) => {
@@ -194,7 +192,13 @@ function NewCollectForm() {
                         </div>
                     );
                 })}
-                <button type="submit" disabled={isSubmitting} className="submit-button">Submit</button>
+                <hr/>
+                <input type="checkbox"/>
+                <label name=''> I have collected everything listed above.</label>
+
+                <button type="button" onClick={registerCredential} disabled={verifiedByStaff} className="submit-button">Step 1: {verifiedByStaff?'Verified':'Get A Staff to Verify'}</button>
+                {errors['verify'] && <p className="form-error">{errors['verify']}</p>}
+                <button type="submit" disabled={isSubmitting||!verifiedByStaff} className="submit-button">Step 2: Submit</button>
             </form>
         </div>
     );
