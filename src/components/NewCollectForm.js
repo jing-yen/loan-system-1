@@ -111,7 +111,7 @@ function NewCollectForm() {
                 rp: { name: "Your App Name" },
                 user: {
                     id: new Uint8Array(16), // User ID in Uint8Array form, must be unique per user
-                    name: "username@example.com",
+                    name: "Staff and Makers",
                     displayName: "User Name"
                 },
                 pubKeyCredParams: [

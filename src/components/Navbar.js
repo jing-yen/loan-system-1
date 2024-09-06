@@ -82,6 +82,7 @@ function Navbar() {
             alert("Please select the items you wish to borrow.");
         }
     };
+    console.log(window.location);
 
     return (
         <div className="navbar">
@@ -91,8 +92,9 @@ function Navbar() {
                 </Link>
             </div>
             <div className="rightSide">
-                <Link to="/">🏠 Home</Link>
+                {window.location.pathname=='/'?<></>:<Link to="/">🏠 Home</Link>}
 
+                <Link to="/booking">📅 Booking</Link>
                 
                 <div className="cart-icon" onClick={toggleCollections}>
                     📦 Collect
@@ -100,10 +102,11 @@ function Navbar() {
                 <div className="cart-icon" onClick={toggleReturns}>
                     ↩️ Return
                 </div>
-                
                 <div className="cart-icon" onClick={toggleCart}>
                     🛒 Cart ({cart.length})
                 </div>
+                
+
                 {isCartOpen && (
                     <div className="cart-dropdown">
                         <div className="cart-header">🛒 My Cart</div>

@@ -7,6 +7,7 @@ import NewCollectForm from './components/NewCollectForm';
 import NewReturnForm from './components/NewReturnForm';
 import { CartProvider } from './components/CartContext'; // Import the provider
 import LoanDashboard from './pages/Dashboard';
+import OutlookBooking from './pages/Booking';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/new-collect-form" element={<NewCollectForm />} />
             <Route path="/new-return-form" element={<NewReturnForm />} />
             <Route path="/dashboard" element={<LoanDashboard/>} />
+            <Route path="/booking" element={<OutlookBooking />} />
           </Routes>
         </Router>
       </CartProvider>
