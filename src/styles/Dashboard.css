@@ -83,11 +83,6 @@ body {
     padding: 0;
 }
 
-.content-area {
-    width: 100%;
-    padding: 20px;
-}
-
 .dashboard-container {
     display: flex;
     justify-content: space-between;

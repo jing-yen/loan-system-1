@@ -19,41 +19,29 @@ body {
   /* Make space for the sidebar */
   max-width: calc(100% - 150px);
   /* Adjust the width */
-  padding: 40px;
   align-items: center;
 }
 
 .content-area {
   display: inline-flex;
-  padding: 50px 50px;
   flex-direction: column;
   align-items: center;
-  gap: 75px;
+  padding: 50px 32px;
 }
 
 
 .content-area,
 .main-content {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1260px;
   /* Adjust based on your design preference */
   margin-left: auto;
   margin-right: auto;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
   align-items: center;
 }
-
-.content-area,
-.main-content {
-  max-width: 1200px;
-  /* Adjust based on your design preference */
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 
 @media (max-width: 768px) {
 
@@ -64,28 +52,21 @@ body {
   }
 }
 
-
-.categories-sidebar {
-  position: sticky;
-  top: 150px;
-  /* Adjust if your navbar height changes */
-  height: calc(100vh - 150px);
-  /* Adjust the height based on navbar */
-}
-
 .inventory-list {
   display: grid;
-  grid-template-columns: 1fr;
-  /* Changed to auto-fit and adjusted min-width */
+  grid-template-columns: repeat(auto-fit, minmax(232px, auto)); /* Adjust 232px to match the inventory-item width */
   gap: 20px;
-  padding: 20px;
-  /* Adjust padding as needed */
+  padding: 20px 0;
   justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 .inventory-item {
   display: flex;
-  width: 232px;
+  width: 100%; /* Ensure the items take up the full width within the grid cell */
+  max-width: 232px; /* Maintain the max-width */
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
@@ -115,11 +96,8 @@ body {
 
 /* Add responsive behavior */
 @media (min-width: 768px) {
-
-  /* Adjust breakpoint as needed */
   .inventory-list {
-    grid-template-columns: repeat(4, 1fr);
-    /* Four items per row */
+    grid-template-columns: repeat(auto-fit, minmax(232px, 1fr)); /* Responsive grid columns */
   }
 }
 
@@ -189,9 +167,9 @@ input[type="text"] {
   align-items: flex-start;
   margin-right: auto;
   /* Center the .welcome-message horizontally */
-  margin-left: 9%;
+  margin-left: 0%;
   /* Center the .welcome-message horizontally */
-  margin-top: -3%;
+  margin-top: 0%;
 }
 
 h1 {
@@ -234,20 +212,4 @@ p {
 
 .scrollToTop-btn:hover {
   background-color: #0056b3;
-}
-
-.action-container {
-  display: flex;
-  justify-content: space-between; /* Spreads the items with space between */
-  width: 100%;
-}
-
-.action-item {
-  width: 48%; /* Each item takes up approximately 50% of the container */
-  box-sizing: border-box; /* Includes padding and borders in the width */
-  background-color: #f9f9f9; /* Optional: Add background color */
-  padding: 20px; /* Optional: Add padding for spacing */
-  text-align: center; /* Optional: Center-align text */
-  border-radius: 10px; /* Optional: Add rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
 }

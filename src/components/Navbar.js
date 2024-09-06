@@ -11,6 +11,57 @@ const defaultImageUrl = `/assets/default.jpg`;
 function Navbar() {
     const [isCartOpen, setIsCartOpen] = useState(false);
     let navigate = useNavigate();
+  
+  const toggleCollections = () => {
+    var loanID = prompt("📦 Collections: Enter Loan ID:");
+    handleCollectionsOrReturns('collect', loanID);
+  };
+
+  const toggleReturns = () => {
+    var loanID = prompt("↩️ Returns: Enter Loan ID:");
+    handleCollectionsOrReturns('collect', loanID);
+  };
+  
+
+  const handleCollectionsOrReturns = async (action, loanID) => {
+    try {
+      // Call the API to check loan details
+      const response = await fetch(`https://express-server-1.fly.dev/api/loan-details/${loanID}`);
+  
+      if (response.status === 404) {
+        // Loan not found, handle the error (e.g., display a message)
+        alert('Loan not found');
+        // You might want to display an error message to the user here
+        return; // Stop further execution
+      }
+
+      // Parse the response as JSON
+      const loanDetails = await response.json();
+
+      // Now you have the loan details in the `loanDetails` variable
+      console.log('Loan Details:', loanDetails);
+
+      // If the loan items are already collected
+      if (action == 'collect' && loanDetails.status != 'Reserved') {
+        alert('Loan items are already collected');
+        return; // Stop further execution
+      }
+
+      // If the loan items are already returned, or not collected yet
+      if (action == 'return' && loanDetails.status != 'Borrowed') {
+        alert('Loan items are already returned, or not collected yet');
+        return; // Stop further execution
+    }
+  
+      // If the API call is successful (status code is not 404)
+      navigate(action=='collect' ? '/new-collect-form': '/new-return-form', { state: { loanDetails: loanDetails } });
+  
+    } catch (error) {
+      // Handle any errors that occur during the API call
+      console.error('Error checking loan details:', error);
+      // You might want to display a generic error message to the user here
+    }
+};
 
     const { cart, setCart } = useCart(); // Use useCart here
     let location = useLocation();
@@ -40,9 +91,18 @@ function Navbar() {
                 </Link>
             </div>
             <div className="rightSide">
-                <Link to="/">Home</Link>
+                <Link to="/">🏠 Home</Link>
+
+                
+                <div className="cart-icon" onClick={toggleCollections}>
+                    📦 Collect
+                </div>
+                <div className="cart-icon" onClick={toggleReturns}>
+                    ↩️ Return
+                </div>
+                
                 <div className="cart-icon" onClick={toggleCart}>
-                    Cart ({cart.length})
+                    🛒 Cart ({cart.length})
                 </div>
                 {isCartOpen && (
                     <div className="cart-dropdown">

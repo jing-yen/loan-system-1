@@ -157,9 +157,8 @@ function InventoryList() {
         .sort((a, b) => a.item_name.localeCompare(b.item_name)); // This line adds sorting by item_name
 
     return (
-        <div className="main-content">
-            <div>
-                <SearchBar
+        <div className="">
+            <SearchBar
                     onSearchChange={handleSearchChange}
                     onCategoryChange={handleCategoryChange}
                     selectedCategories={selectedCategories}
@@ -173,7 +172,6 @@ function InventoryList() {
                         />)
                     )}
                 </div>
-            </div>
         </div>
     );
 }
