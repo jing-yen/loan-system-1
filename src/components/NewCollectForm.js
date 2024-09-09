@@ -13,7 +13,7 @@ function NewCollectForm() {
 
     const [formData, setFormData] = useState({
         phone: '',
-        collection_date: '',
+        date: '',
     });
 
     const handleChange = (e) => {
@@ -58,7 +58,7 @@ function NewCollectForm() {
                 isValid = false;
             }
 
-            if ((key === 'collection_date') && formData[key]) {
+            if ((key === 'date') && formData[key]) {
                 const date = new Date(formData[key]);
                 const dayOfWeek = date.getDay();
                 if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -193,8 +193,6 @@ function NewCollectForm() {
                     );
                 })}
                 <hr/>
-                <input type="checkbox"/>
-                <label name=''> I have collected everything listed above.</label>
 
                 <button type="button" onClick={registerCredential} disabled={verifiedByStaff} className="submit-button">Step 1: {verifiedByStaff?'Verified':'Get A Staff to Verify'}</button>
                 {errors['verify'] && <p className="form-error">{errors['verify']}</p>}

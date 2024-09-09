@@ -13,7 +13,7 @@ function NewReturnForm() {
 
     const [formData, setFormData] = useState({
         phone: '',
-        collection_date: '',
+        date: '',
     });
 
     const handleChange = (e) => {
@@ -53,7 +53,7 @@ function NewReturnForm() {
                 isValid = false;
             }
 
-            if ((key === 'collection_date') && formData[key]) {
+            if ((key === 'date') && formData[key]) {
                 const date = new Date(formData[key]);
                 const dayOfWeek = date.getDay();
                 if (dayOfWeek === 0 || dayOfWeek === 6) {

@@ -19,7 +19,7 @@ function Navbar() {
 
   const toggleReturns = () => {
     var loanID = prompt("↩️ Returns: Enter Loan ID:");
-    handleCollectionsOrReturns('collect', loanID);
+    handleCollectionsOrReturns('return', loanID);
   };
   
 
