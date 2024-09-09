@@ -94,7 +94,7 @@ function Navbar() {
             <div className="rightSide">
                 {window.location.pathname=='/'?<></>:<Link to="/">🏠 Home</Link>}
 
-                <Link to="/booking">📅 Booking</Link>
+                <a onClick={()=>window.open("https://outlook.office365.com/book/InnovationDesignHubMediaRoom@nusu.onmicrosoft.com")}>📅 Booking</a>
                 
                 <div className="cart-icon" onClick={toggleCollections}>
                     📦 Collect
