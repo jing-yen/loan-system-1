@@ -41,7 +41,7 @@ function Home({ cart, setCart }) {
   return (
     <div className="content-area">
       <div className="welcome-message">
-        <h1>Welcome to the Hub’s Tool Catalogue <Link to='/dashboard' style={{textDecoration: 'none'}}>🔧</Link></h1>
+        <h1>Welcome to the Hub’s Tool Catalogue {window.location.host != 'edic.vercel.app' && <Link to='/dashboard' style={{textDecoration: 'none'}}>🔧</Link>}</h1>
         <p>Feel free to browse through the items we have for loan in the Innovation & Design Hub, and choose any items you require.</p>
       </div>
             

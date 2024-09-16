@@ -19,10 +19,12 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/new-borrow-form" element={<NewBorrowForm />} />
-            <Route path="/new-collect-form" element={<NewCollectForm />} />
-            <Route path="/new-return-form" element={<NewReturnForm />} />
-            <Route path="/dashboard" element={<LoanDashboard/>} />
             <Route path="/booking" element={<OutlookBooking />} />
+            {window.location.host != 'edic.vercel.app' && <>
+              <Route path="/new-collect-form" element={<NewCollectForm />} />
+              <Route path="/new-return-form" element={<NewReturnForm />} />
+              <Route path="/dashboard" element={<LoanDashboard/>} />
+            </>}
           </Routes>
         </Router>
       </CartProvider>

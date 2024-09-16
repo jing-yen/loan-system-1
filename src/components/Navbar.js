@@ -130,12 +130,14 @@ function Navbar() {
 
                     <a onClick={()=>window.open("https://outlook.office365.com/book/InnovationDesignHubMediaRoom@nusu.onmicrosoft.com")}>📅 Booking</a>
                     
-                    <div className="cart-icon" onClick={toggleCollections}>
-                        📦 Collect
-                    </div>
-                    <div className="cart-icon" onClick={toggleReturns}>
-                        ↩️ Return
-                    </div>
+                    {window.location.host != 'edic.vercel.app' && <>
+                        <div className="cart-icon" onClick={toggleCollections}>
+                            📦 Collect
+                        </div>
+                        <div className="cart-icon" onClick={toggleReturns}>
+                            ↩️ Return
+                        </div>
+                    </>}
                     <div className="cart-icon" onClick={toggleCart}>
                         🛒 Cart ({cart.length})
                     </div>
