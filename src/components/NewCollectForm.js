@@ -14,6 +14,8 @@ function NewCollectForm() {
     const [formData, setFormData] = useState({
         phone: '',
         date: '',
+        staff_name: '',
+        serial_numbers: '',
     });
 
     const handleChange = (e) => {
@@ -174,7 +176,7 @@ function NewCollectForm() {
             
             <hr/>
             <form onSubmit={handleSubmit}>
-                {Object.keys(formData).map((key, index) => {
+                {Object.keys(formData).slice(0,-2).map((key, index) => {
 
                     return (
                         <div className="form-group" key={index}>
@@ -192,8 +194,28 @@ function NewCollectForm() {
                         </div>
                     );
                 })}
-                <hr/>
-
+                <div className="form-group">
+                    <label>Serial Numbers:</label>
+                    <textarea
+                        name={'serial_numbers'}
+                        value={formData['serial_numbers']}
+                        onChange={handleChange}
+                        className={errors['serial_numbers'] ? 'input-error' : ''}
+                    />
+                </div>
+                <hr/><br/>
+                
+                <div className="form-group">
+                    <label>Updated by:</label>
+                    <input
+                        type={'text'}
+                        name={'staff_name'}
+                        value={formData['staff_name']}
+                        onChange={handleChange}
+                        className={errors['staff_name'] ? 'input-error' : ''}
+                    />
+                    {errors['staff_name'] && <p className="form-error">{errors['staff_name']}</p>}
+                </div>
                 <button type="button" onClick={registerCredential} disabled={verifiedByStaff} className="submit-button">Step 1: {verifiedByStaff?'Verified':'Get A Staff to Verify'}</button>
                 {errors['verify'] && <p className="form-error">{errors['verify']}</p>}
                 <button type="submit" disabled={isSubmitting||!verifiedByStaff} className="submit-button">Step 2: Submit</button>

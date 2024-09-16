@@ -346,6 +346,7 @@ const LoanDashboard = () => {
             {modalItem && modalItem.transaction_id && (<>
                 <h2>{modalItem.student_name}</h2>
                 <p><strong>Status:</strong> {modalItem.status}</p>
+                <p><strong>Updated by:</strong> {modalItem.updated_by}</p>
                 <hr/>
                 <br/>
                 <p><strong>Start Date:</strong> {new Date(modalItem.start_usage_date).toLocaleDateString()}</p>
@@ -361,6 +362,9 @@ const LoanDashboard = () => {
                     <p>{item.quantity} --- {item.item_name}</p>
                   </div>))}
                 {modalItem.loan_items.length===0 && <p>No items. Error?</p>}
+                <hr/>
+                <h3>Serial Numbers</h3>
+                <p style={{whiteSpace:'pre'}}>{modalItem.remarks || 'N/A'}</p>
               </>)
             }
           </Modal>

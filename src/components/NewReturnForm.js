@@ -15,6 +15,7 @@ function NewReturnForm() {
     const [formData, setFormData] = useState({
         phone: '',
         date: '',
+        staff_name: '',
     });
 
     const handleChange = (e) => {
@@ -174,7 +175,7 @@ function NewReturnForm() {
 
             <hr/>
             <form onSubmit={handleSubmit}>
-                {Object.keys(formData).map((key, index) => {
+                {Object.keys(formData).slice(0,-1).map((key, index) => {
 
                     return (
                         <div className="form-group" key={index}>
@@ -192,7 +193,19 @@ function NewReturnForm() {
                         </div>
                     );
                 })}
-                <hr/>
+                <hr/><br/>
+                
+                <div className="form-group">
+                    <label>Updated by:</label>
+                    <input
+                        type={'text'}
+                        name={'staff_name'}
+                        value={formData['staff_name']}
+                        onChange={handleChange}
+                        className={errors['staff_name'] ? 'input-error' : ''}
+                    />
+                    {errors['staff_name'] && <p className="form-error">{errors['staff_name']}</p>}
+                </div>
 
                 <button type="button" onClick={registerCredential} disabled={verifiedByStaff} className="submit-button">Step 1: {verifiedByStaff?'Verified':'Get A Staff to Verify'}</button>
                 {errors['verify'] && <p className="form-error">{errors['verify']}</p>}
