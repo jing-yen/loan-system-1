@@ -13,7 +13,6 @@ function NewReturnForm() {
 
 
     const [formData, setFormData] = useState({
-        phone: '',
         date: '',
         staff_name: '',
     });

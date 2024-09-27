@@ -25,6 +25,7 @@ function Navbar() {
         setIsModalOpen(true);
         setError('');
         setLoanID('');
+        setIsCartOpen(false);
     };
 
     const toggleReturns = () => {
@@ -32,6 +33,7 @@ function Navbar() {
         setIsModalOpen(true);
         setError('');
         setLoanID('');
+        setIsCartOpen(false);
     };
   
     const handleCollectionsOrReturns = async (action, loanID) => {
@@ -84,6 +86,7 @@ function Navbar() {
 
     const toggleCart = () => {
         setIsCartOpen(!isCartOpen);
+        setIsModalOpen(false);
     };
 
     const removeFromCart = (indexToRemove) => {
@@ -107,7 +110,7 @@ function Navbar() {
                     {error ? <p className="error-message">{error}</p>:
                         <><p>Enter the Loan ID from your email.</p>
                         <input autoFocus
-                            type="number"
+                            type="text"
                             value={loanID}
                             placeholder="Enter Loan ID"
                             onChange={(e) => setLoanID(e.target.value)}
@@ -127,8 +130,6 @@ function Navbar() {
                 </div>
                 <div className="rightSide">
                     {window.location.pathname=='/'?<></>:<Link to="/">🏠 Home</Link>}
-
-                    <a onClick={()=>window.open("https://outlook.office365.com/book/InnovationDesignHubMediaRoom@nusu.onmicrosoft.com")}>📅 Booking</a>
                     
                     {window.location.host != 'edic.vercel.app' && <>
                         <div className="cart-icon" onClick={toggleCollections}>

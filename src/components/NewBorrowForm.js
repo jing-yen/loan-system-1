@@ -3,9 +3,11 @@ import '../styles/NewBorrowForm.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from './CartContext';
+import { useWhichLocation } from './LocationContext';
 
 function NewBorrowForm() {
     const location = useLocation();
+    const { whichLocation } = useWhichLocation();
     const selectedItems = useMemo(() => location.state?.selectedItems || [], [location.state?.selectedItems]);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,7 +16,7 @@ function NewBorrowForm() {
     const [requiresApproval, setRequiresApproval] = useState(false);
     const submitButtonRef = useRef(null);
 
-
+    console.log(whichLocation);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -74,6 +76,11 @@ function NewBorrowForm() {
                 isValid = false;
             }
 
+            if ((key === 'phone_number') && formData[key].length !== 8) {
+                newErrors[key] = 'Invalid phone number';
+                isValid = false;
+            }
+
             if ((key === 'start_usage_date' || key === 'end_usage_date') && formData[key]) {
                 const date = new Date(formData[key]);
                 const dayOfWeek = date.getDay();
@@ -109,6 +116,7 @@ function NewBorrowForm() {
                 const formDataToSend = {
                     ...formData,
                     ...itemsData,
+                    location: whichLocation.whichLocation || 'hub',
                     completion_time: new Date().toISOString()
                 };
 

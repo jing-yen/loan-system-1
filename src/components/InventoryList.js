@@ -3,6 +3,7 @@ import Modal from './Modal';
 import '../styles/App.css';
 import SearchBar from './SearchBar';
 import { useCart } from './CartContext';
+import { useWhichLocation } from './LocationContext';
 
 function InventoryItem({ item, onAddToCart }) {
     const [modalOpen, setModalOpen] = useState(false);
@@ -31,8 +32,7 @@ function InventoryItem({ item, onAddToCart }) {
             <div className={`inventory-item`} onClick={handleItemClick}>
                 <img src={imageUrl} alt={item.item_name} onError={handleImageError} className="item-image" />
                 <h3 className="item-title">{item.item_name}</h3>
-                {item.brand && <p className="item-brand">{item.brand}</p>}
-                <p className="item-details">Qty: {item.qty_available}</p>
+                <p className="item-brand">{item.brand}&zwnj;</p>
             </div>
 
             <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
@@ -57,6 +57,7 @@ function InventoryItem({ item, onAddToCart }) {
 
 
 function InventoryList() {
+    const { whichLocation } = useWhichLocation();
     const [items, setItems] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategories, setSelectedCategories] = useState([]);
@@ -82,14 +83,15 @@ function InventoryList() {
 
 
     useEffect(() => {
-        fetch(`${API_URL}/api/inventory`)
+        console.log(whichLocation);
+        fetch(`${API_URL}/api/inventory`+ (whichLocation=='e2a' ? 'E2A' : ''))
             .then(response => response.json())
             .then(data => {
                 const groupedItems = groupAndSumItems(data);
                 setItems(groupedItems);
             })
             .catch(error => console.error('Error fetching data:', error));
-    }, [API_URL]);
+    }, [API_URL, whichLocation]);
 
 
     const handleSearchChange = (newSearchTerm) => {

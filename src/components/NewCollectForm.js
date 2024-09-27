@@ -12,7 +12,6 @@ function NewCollectForm() {
     const [verifiedByStaff, setVerifiedByStaff] = useState(false);
 
     const [formData, setFormData] = useState({
-        phone: '',
         date: '',
         staff_name: '',
         serial_numbers: '',
@@ -50,11 +49,6 @@ function NewCollectForm() {
         }
 
         Object.keys(formData).forEach(key => {
-            if ((key === 'phone') && formData[key].trim() != loanDetails.student_phone) {
-                newErrors[key] = 'Incorrect phone number';
-                isValid = false;
-            }
-
             if (!formData[key].trim() && key !== 'additional_remarks') {
                 newErrors[key] = 'Field cannot be blank';
                 isValid = false;
