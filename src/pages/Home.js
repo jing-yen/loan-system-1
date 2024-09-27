@@ -105,7 +105,7 @@ function Home() {
       <img className='cover-image' src="https://cdn.prod.website-files.com/65ee59f949d5783be9a28afa/6600dd49fe28188d945174be_DSC00273-p-1080.webp"></img>
 
       <div className="welcome-message">
-        <h1><span className={isE2a()?'other-location':''} onClick={()=>isE2a()&&changeLocation()}>📍 Innovation & Design Hub</span><span className={isE2a()?'':'other-location'} onClick={()=>!isE2a()&&changeLocation()}> / 📍 Electronics Workshop</span></h1>
+        <h1><span className={isE2a()?'other-location':''} onClick={()=>isE2a()&&changeLocation()}>📍 The Hub</span><span className={isE2a()?'':'other-location'} onClick={()=>!isE2a()&&changeLocation()}> / 📍 Electronics Workshop</span></h1>
         <p>{isE2a()?'E2A Laboratory':'Innovation & Design Hub, or The Hub in short,'} is a space to create, tinker and pursue exciting ideas to spur innovation.</p>
       </div>
       <div className='home-button-row'>

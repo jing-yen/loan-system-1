@@ -177,7 +177,7 @@ function NewBorrowForm() {
                         <div className="form-group" key={index}>
                             <label>{key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}:</label>
                             <input
-                                type={key === 'email' ? 'email' : (key.includes('date') ? 'date' : 'text')}
+                                type={key === 'phone_number' ? 'number' : key === 'email' ? 'email' : (key.includes('date') ? 'date' : 'text')}
                                 name={key}
                                 value={formData[key]}
                                 onChange={handleChange}
