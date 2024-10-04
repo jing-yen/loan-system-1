@@ -13,7 +13,7 @@ function NewReturnForm() {
 
 
     const [formData, setFormData] = useState({
-        date: '',
+        date: new Date().toISOString().split('T')[0],
         staff_name: '',
     });
 

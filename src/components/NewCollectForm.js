@@ -12,7 +12,7 @@ function NewCollectForm() {
     const [verifiedByStaff, setVerifiedByStaff] = useState(false);
 
     const [formData, setFormData] = useState({
-        date: '',
+        date: new Date().toISOString().split('T')[0],
         staff_name: '',
         serial_numbers: '',
     });
