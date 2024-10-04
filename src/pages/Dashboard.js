@@ -78,7 +78,17 @@ const LoanDashboard = () => {
     }
   };
 
+  const checkOverdue = (transaction) => {
+    if (new Date(transaction.end_usage_date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0) && transaction.status == 'Borrowed') {
+      return true;
+    }
+    return false;
+  }
+
   const filteredLoanData = loanData.filter((transaction) => {
+    if (loanFilter=='Overdue') {
+      return checkOverdue(transaction);
+    }
     if (loanFilter.length > 0) {
       return transaction.status === loanFilter;
     }
@@ -215,6 +225,9 @@ const LoanDashboard = () => {
     };
     loanData.forEach((transaction) => {
       statusCount[transaction.status] += 1;
+      if (checkOverdue(transaction)) {
+        statusCount.Overdue += 1;
+      }
     });
     return statusCount;
   };
@@ -411,7 +424,7 @@ const LoanDashboard = () => {
                 className={`filter-btn ${loanFilter === 'Overdue' ? 'active' : ''}`}
                 onClick={() => setLoanFilter('Overdue')}
               >
-                {loanData.filter((transaction) => {return transaction.status==="Overdue"}).length} Overdue
+                {loanData.filter((transaction) => {return checkOverdue(transaction)}).length} Overdue
               </button>
             </div>
             <table>
@@ -430,7 +443,7 @@ const LoanDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredLoanData.slice(0,showAllLoans ? -1: 9).map((transaction) => (
+                {filteredLoanData.slice(0,showAllLoans ? undefined: 9).map((transaction) => (
                   <tr key={transaction.transaction_id} onClick={()=>setModalItem(transaction)}>
                     <td>{transaction.transaction_id}</td>
                     <td>{transaction.student_name}</td>
