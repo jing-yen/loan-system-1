@@ -440,6 +440,7 @@ const LoanDashboard = () => {
                     Status {getLoanSortIcon('status')}
                   </th>
                   <th>Loan Items</th>
+                  <th style={{maxWidth: '30ch',  wordWrap: 'break-word'}}>Serial Number</th>
                 </tr>
               </thead>
               <tbody>
@@ -457,6 +458,7 @@ const LoanDashboard = () => {
                         ))}
                       </ul>
                     </td>
+                    <td style={{maxWidth: '30ch',  wordWrap: 'break-word'}}>{transaction.remarks}</td>
                   </tr>
                 ))}
               </tbody>

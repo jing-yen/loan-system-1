@@ -190,12 +190,14 @@ function NewCollectForm() {
                 })}
                 <div className="form-group">
                     <label>Serial Numbers:</label>
+                    <label>Please type in separate lines</label>
                     <textarea
                         name={'serial_numbers'}
                         value={formData['serial_numbers']}
                         onChange={handleChange}
                         className={errors['serial_numbers'] ? 'input-error' : ''}
                     />
+                    {errors['serial_numbers'] && <p className="form-error">{errors['serial_numbers']}</p>}
                 </div>
                 <hr/><br/>
                 
