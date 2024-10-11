@@ -116,7 +116,7 @@ function NewBorrowForm() {
                 const formDataToSend = {
                     ...formData,
                     ...itemsData,
-                    location: whichLocation.whichLocation || 'hub',
+                    location: whichLocation || 'hub',
                     completion_time: new Date().toISOString()
                 };
 
@@ -125,6 +125,7 @@ function NewBorrowForm() {
                     formDataToSend.project_supervisor_name = '';
                     formDataToSend.supervisor_email = '';
                 }
+                console.log(formDataToSend);
 
                 await axios.post('https://express-server-1.fly.dev/api/submit-form', formDataToSend);
                 setIsSubmitted(true); // Set this on successful submission
