@@ -35,8 +35,8 @@ const LoanDashboard = () => {
   const [modalItem, setModalItem] = useState(null);
   const [summaryData, setSummaryData] = useState([
     { id: 'loansPerMonth', label: 'Loans This Month', value: 0 },
-    { id: 'loanStatus', label: 'Outstanding Loans', value: 0 }, // Example value
-    { id: 'popularItems', label: 'Most Popular Items', value: 0 }, // Example value
+    { id: 'loanStatus', label: 'Outstanding Loans', value: 0 },
+    { id: 'popularItems', label: 'Most Popular Items', value: 0 },
   ]);
 
   // 1st table: Loan transactions
@@ -47,8 +47,17 @@ const LoanDashboard = () => {
 
   // 2nd table: Inventory 
   const [inventoryData, setInventoryData] = useState([]);
+  const [inventoryDataE2A, setInventoryDataE2A] = useState([]);
   const [showAllInventory, setShowAllInventory] = useState(false);
   const [inventorySort, setInventorySort] = useState({ key: 'item_id', direction: 'descending' });
+  
+  // Shared by both: Location Filter
+  const [locationFilter, setLocationFilter] = useState(localStorage.getItem('location'));
+
+  // Get this computer's location preference (hub or e2a or both)
+  useEffect(() => {
+    localStorage.setItem('location', locationFilter);
+  }, [locationFilter]);
 
   // Render summary items
   const renderSummaryItems = () => {
@@ -85,7 +94,18 @@ const LoanDashboard = () => {
     return false;
   }
 
-  const filteredLoanData = loanData.filter((transaction) => {
+  const filterByLocation = (transactions) => {
+    return transactions.filter((transaction) => {
+      if (locationFilter.length > 0) {
+        return transaction.location === locationFilter;
+      }
+      return true;
+    });
+  };
+
+  const filteredLoanDataByLocation = filterByLocation(loanData);
+
+  const filteredLoanData = filteredLoanDataByLocation.filter((transaction) => {
     if (loanFilter=='Overdue') {
       return checkOverdue(transaction);
     }
@@ -94,6 +114,8 @@ const LoanDashboard = () => {
     }
     return true;
   });
+
+  const filteredInventoryData = locationFilter.length==0 ? inventoryData.concat(inventoryDataE2A) : locationFilter=='hub' ? inventoryData : inventoryDataE2A;
 
   const handleLoanSort = (key) => {
     let direction = 'ascending';
@@ -171,6 +193,13 @@ const LoanDashboard = () => {
         setInventoryData(data.sort((a, b) => parseInt(b['item_id']) - parseInt(a['item_id'])))
       )
       .catch((error) => console.error('Error fetching inventory:', error));
+      
+    fetch('https://express-server-1.fly.dev/api/inventoryE2A')
+    .then((response) => response.json())
+    .then((data) => 
+      setInventoryDataE2A(data.sort((a, b) => parseInt(b['item_id']) - parseInt(a['item_id'])))
+    )
+    .catch((error) => console.error('Error fetching E2A inventory:', error));
   }, []);
 
   useEffect(() => {
@@ -212,6 +241,7 @@ const LoanDashboard = () => {
       const month = startDate.getMonth(); // Get month index (0-11)
       months[month] += 1; // Increment loan count for the respective month
     });
+    console.log(loanData);
     return months;
   };
 
@@ -393,38 +423,54 @@ const LoanDashboard = () => {
             <div className="chart-container">{renderSelectedChart()}</div>
           </div>
 
+          <hr/>
+          
+
           <div className="table-container">
-            <h2>Loan Transactions</h2>
+            <h2>{loanData.length} Loan Transactions</h2>
+            <div className="filter-container">
+            <label htmlFor="location-select" className="filter-label">Select Location:</label>
+            <select
+              id="location-select"
+              className="filter-select"
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+            >
+              <option value="">Hub & E2A</option>
+              <option value="hub">Hub</option>
+              <option value="e2a">E2A</option>
+            </select>
+          </div>
             <div className="filter-container">
               <button
                 className={`filter-btn ${loanFilter === '' ? 'active' : ''}`}
                 onClick={() => setLoanFilter('')}
               >
-                Show All {loanData.length}
+                Show All
               </button>
               <button
                 className={`filter-btn ${loanFilter === 'Reserved' ? 'active' : ''}`}
                 onClick={() => setLoanFilter('Reserved')}
               >
-                {loanData.filter((transaction) => {return transaction.status==="Reserved"}).length} Reserved
+                {filteredLoanDataByLocation.filter((transaction) => {return transaction.status==="Reserved"}).length} Reserved
               </button>
               <button
                 className={`filter-btn ${loanFilter === 'Borrowed' ? 'active' : ''}`}
                 onClick={() => setLoanFilter('Borrowed')}
               >
-                {loanData.filter((transaction) => {return transaction.status==="Borrowed"}).length} Borrowed
+                {filteredLoanDataByLocation.filter((transaction) => {return transaction.status==="Borrowed"}).length} Borrowed
               </button>
               <button
                 className={`filter-btn ${loanFilter === 'Completed' ? 'active' : ''}`}
                 onClick={() => setLoanFilter('Completed')}
               >
-                {loanData.filter((transaction) => {return transaction.status==="Completed"}).length} Completed
+                {filteredLoanDataByLocation.filter((transaction) => {return transaction.status==="Completed"}).length} Completed
               </button>
               <button
                 className={`filter-btn ${loanFilter === 'Overdue' ? 'active' : ''}`}
                 onClick={() => setLoanFilter('Overdue')}
               >
-                {loanData.filter((transaction) => {return checkOverdue(transaction)}).length} Overdue
+                {filteredLoanDataByLocation.filter((transaction) => {return checkOverdue(transaction)}).length} Overdue
               </button>
             </div>
             <table>
@@ -475,7 +521,7 @@ const LoanDashboard = () => {
           <br/>
 
           <div className="table-container">
-            <h2>Inventory Data</h2>
+            <h2>Inventory Data for {locationFilter==''? 'Hub & E2A': locationFilter=='hub' ? 'Hub': 'E2A'}</h2>
             <table>
               <thead>
                 <tr>
@@ -497,7 +543,7 @@ const LoanDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {inventoryData.slice(0,showAllInventory ? -1: 9).map((item) => (
+                {filteredInventoryData.slice(0,showAllInventory ? -1: 9).map((item) => (
                   <tr key={item.item_id} onClick={()=>setModalItem(item)}>
                     <td>{item.item_id}</td>
                     <td>{item.item_name}</td>
@@ -510,7 +556,7 @@ const LoanDashboard = () => {
             </table>
             <br/>
             {/** Option to show all inventory **/}
-            {inventoryData.length>10 && 
+            {filteredInventoryData.length>10 && 
               <u style={{color:'blue'}} onClick={()=>setShowAllInventory(!showAllInventory)}>
                 {showAllInventory? "Only the 10 most recent": "Show "+(inventoryData.length-10)+" more ..."}
               </u>}
