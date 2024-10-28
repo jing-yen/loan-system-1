@@ -52,7 +52,7 @@ const LoanDashboard = () => {
   const [inventorySort, setInventorySort] = useState({ key: 'item_id', direction: 'descending' });
   
   // Shared by both: Location Filter
-  const [locationFilter, setLocationFilter] = useState(localStorage.getItem('location'));
+  const [locationFilter, setLocationFilter] = useState(localStorage.getItem('location') || '');
 
   // Get this computer's location preference (hub or e2a or both)
   useEffect(() => {
