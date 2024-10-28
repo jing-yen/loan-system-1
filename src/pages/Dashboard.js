@@ -174,7 +174,7 @@ const LoanDashboard = () => {
       case 'Overdue':
         return 'lightred';
       default:
-        return 'white';
+        return 'lightgray';
     }
   };
 
@@ -221,7 +221,7 @@ const LoanDashboard = () => {
     const mostPopularItem = calculateMostPopularItems()[0];
     setSummaryData([
       { id: 'loansPerMonth', label: 'Loans This Month', value: calculateLoansPerMonth()[date.getMonth()] },
-      { id: 'loanStatus', label: 'Outstanding Loans', value: (loanData.length - calculateLoanStatus().Completed).toString() + ' (' + ((loanData.length - calculateLoanStatus().Completed) / loanData.length * 100).toFixed()+'%)' }, // Example value
+      { id: 'loanStatus', label: 'Outstanding Loans', value: (loanData.length - calculateLoanStatus().Completed - calculateLoanStatus().Rejected).toString() + ' (' + ((loanData.length - calculateLoanStatus().Completed - calculateLoanStatus().Rejected) / loanData.length * 100).toFixed()+'%)' }, // Example value
       { id: 'popularItems', label: 'Most Popular Items', value: mostPopularItem[0] + ' (' + mostPopularItem[1] + ')'}, // Example value
     ]);
   }, [loanData]);
@@ -252,6 +252,7 @@ const LoanDashboard = () => {
       Borrowed: 0,
       Completed: 0,
       Overdue: 0,
+      Rejected: 0
     };
     loanData.forEach((transaction) => {
       statusCount[transaction.status] += 1;
@@ -321,11 +322,11 @@ const LoanDashboard = () => {
   };
 
   const loanStatusData = {
-    labels: ['Reserved', 'Borrowed', 'Completed', 'Overdue'],
+    labels: ['Reserved', 'Borrowed', 'Completed', 'Overdue', 'Rejected'],
     datasets: [
       {
         data: Object.values(calculateLoanStatus()),
-        backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384', '#4BC0C0'],
+        backgroundColor: ['#36A2EB', '#FFCE56', '#4BC0C0', '#FF6384', '#888888'],
       },
     ],
   };
