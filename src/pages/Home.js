@@ -102,7 +102,7 @@ function Home() {
               </button>
           </form>
       </Modal>   
-      <img className='cover-image' src={isE2a()?"/EDIC2.jpg": "https://cdn.prod.website-files.com/65ee59f949d5783be9a28afa/6600dd49fe28188d945174be_DSC00273-p-1080.webp"}></img>
+      <img className='cover-image' src={isE2a()?"/EDIC2.jpg": "/hub.jpg"}></img>
 
       <div className="welcome-message">
         <h1><span className={isE2a()?'other-location':''} onClick={()=>isE2a()&&changeLocation()}>📍 The Hub</span><span className={isE2a()?'':'other-location'} onClick={()=>!isE2a()&&changeLocation()}> / 📍 Electronics Workshop</span></h1>
