@@ -3,14 +3,12 @@ import '../styles/NewBorrowForm.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-function NewReturnForm() {
+function NewReturnForm({verifiedByStaff, startVerification}) {
     const location = useLocation();
     const loanDetails = useMemo(() => location.state?.loanDetails || {});
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [verifiedByStaff, setVerifiedByStaff] = useState(false);
-
 
     const [formData, setFormData] = useState({
         date: new Date().toISOString().split('T')[0],
@@ -105,55 +103,10 @@ function NewReturnForm() {
         }
     };
 
-    const registerCredential = async () => {
-        try {
-            const publicKeyCredentialCreationOptions = {
-                challenge: new Uint8Array([0x8C, 0xFA, 0xB3, 0xA9, 0x42, 0xF5, 0x89, 0xDE]), // Example challenge
-                rp: { name: "Your App Name" },
-                user: {
-                    id: new Uint8Array(16), // User ID in Uint8Array form, must be unique per user
-                    name: "Staff and Makers",
-                    displayName: "User Name"
-                },
-                pubKeyCredParams: [
-                    { alg: -7, type: "public-key" }, // ES256
-                    { alg: -257, type: "public-key" } // RS256
-                ],
-                authenticatorSelection: {
-                    authenticatorAttachment: "platform",
-                    userVerification: "required"
-                },
-                timeout: 60000,
-                attestation: "direct",
-            };
-    
-            const credential = await navigator.credentials.create({
-                publicKey: publicKeyCredentialCreationOptions
-            });
-    
-            if (credential) {
-                console.log('Credential registered:', credential);
-                setVerifiedByStaff(true);
-                // Store the credential ID securely for future use
-                const credentialId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
-                console.log('Credential ID:', credentialId);
-                // Store this credentialId in your localStorage or server
-            }
-        } catch (err) {
-            console.error('Credential registration failed:', err);
-        }
-    };
+    useEffect(() => window.scrollTo(0, 0), []);
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
-
-    if (isSubmitting) {
-        return <div className="loading-message">Submitting...</div>;
-    }
-    else if (isSubmitted) {
-        return <div className="submission-success">Form submitted successfully!</div>;
-    }
+    if (isSubmitting) return <div className="loading-message">Submitting...</div>;
+    else if (isSubmitted) return <div className="submission-success">Form submitted successfully!</div>;
 
     return (
         <div className="form-container">
@@ -206,7 +159,7 @@ function NewReturnForm() {
                     {errors['staff_name'] && <p className="form-error">{errors['staff_name']}</p>}
                 </div>
 
-                <button type="button" onClick={registerCredential} disabled={verifiedByStaff} className="submit-button">Step 1: {verifiedByStaff?'Verified':'Get A Staff to Verify'}</button>
+                <button type="button" onClick={startVerification} disabled={verifiedByStaff} className="submit-button">Step 1: {verifiedByStaff?'Verified':'Get A Staff to Verify'}</button>
                 {errors['verify'] && <p className="form-error">{errors['verify']}</p>}
                 <button type="submit" disabled={isSubmitting||!verifiedByStaff} className="submit-button">Step 2: Submit</button>
             </form>
