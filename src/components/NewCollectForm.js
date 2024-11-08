@@ -136,6 +136,7 @@ function NewCollectForm() {
             }
         } catch (err) {
             console.error('Credential registration failed:', err);
+            alert('Please try again');
         }
     };
     
