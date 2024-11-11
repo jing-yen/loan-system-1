@@ -21,6 +21,10 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
         }
     }, [verifying]);
 
+    useEffect(() => {
+        if (inputElement.current) inputElement.current.focus();
+    }, [inputElement]);
+
     const registerCredential = async () => {
         try {
             setPasswordLess(true);
@@ -59,7 +63,6 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
         } catch (err) {
             console.error('Credential registration failed:', err);
             setPasswordLess(false);
-            if (inputElement.current) inputElement.current.focus();
         }
     };
     
