@@ -341,8 +341,10 @@ const LoanDashboard = ({verifiedByStaff, startVerification}) => {
     ],
   };
 
+  if (!verifiedByStaff) return <></>;
+
   return (
-    <div style={{opacity: verifiedByStaff?1:0}} className="content-area">
+    <div className="content-area">
       {/** Modal for selected item **/}
       <Modal isOpen={modalItem} onClose={() => setModalItem(null)}>
         {modalItem && modalItem.item_name && (<>

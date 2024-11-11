@@ -6,7 +6,7 @@ import { useCart } from '../components/CartContext';
 import { useWhichLocation } from '../components/LocationContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-function Catalogue() {
+function Catalogue({verifiedByStaff, startVerification}) {
   const { whichLocation, setWhichLocation } = useWhichLocation();
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,7 +60,7 @@ function Catalogue() {
   return (
     <div className="content-area">
       <div className="welcome-message">
-        <h1>🧾 <span className={whichLocation=='e2a'?'other-location':''} onClick={()=>whichLocation=='e2a'&&attemptToChangeLocation()}>Hub's</span><span className={whichLocation=='e2a'?'':'other-location'} onClick={()=>whichLocation=='hub'&&attemptToChangeLocation()}> / E2A's</span> Tool Catalogue {window.location.host != 'edic.vercel.app' && <Link to='/dashboard' style={{textDecoration: 'none'}}>🔧</Link>}</h1>
+        <h1>🧾 <span className={whichLocation=='e2a'?'other-location':''} onClick={()=>whichLocation=='e2a'&&attemptToChangeLocation()}>Hub's</span><span className={whichLocation=='e2a'?'':'other-location'} onClick={()=>whichLocation=='hub'&&attemptToChangeLocation()}> / E2A's</span> Tool Catalogue {window.location.host != 'edic.vercel.app' && <span onClick={startVerification} style={{textDecoration: 'none'}}>🔧</span>}</h1>
         <p>Feel free to browse through the items we have for loan in {whichLocation=='e2a'?'E2A Electronics Workshop':'the Innovation & Design Hub'}, and choose any items you require.</p>
       </div>
       
