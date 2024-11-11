@@ -2,7 +2,7 @@ import './styles/App.css';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Catalogue from './pages/Catalogue';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import NewBorrowForm from './components/NewBorrowForm';
 import NewCollectForm from './components/NewCollectForm';
 import NewReturnForm from './components/NewReturnForm';
@@ -17,6 +17,8 @@ function App() {
   // Verify PIN logic for all situations
   const [verifiedByStaff, setVerifiedByStaff] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const startVerificationProcess = () => {
     setVerifying(true);
@@ -25,10 +27,10 @@ function App() {
   const handleVerificationResponse = (verified) => {
     console.log('Verification response:', verified);
     setVerifiedByStaff(verified);
-    setVerifying(false);
+    setVerifying(false); 
+    if (location.pathname=='/dashboard') navigate('/')
   }
 
-  const location = useLocation();
 
   useEffect(() => {
     console.log('Location changed:', location, location.pathname=='/dashboard');
