@@ -32,6 +32,7 @@ function App() {
 
   useEffect(() => {
     console.log('Location changed:', location);
+    if (!verifiedByStaff && location.pathname=='/dashboard') startVerificationProcess();
     setVerifiedByStaff(false);
     setVerifying(false);
   }, [location.pathname]);

@@ -61,7 +61,7 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
     };
     
     if (!verifying) return children;
-    //if (passwordLess) return <div className="password-form-container"></div>;
+    if (passwordLess) return <div className="password-form-container"></div>;
     
     return (
         <div className="password-form-container">

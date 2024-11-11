@@ -177,8 +177,6 @@ const LoanDashboard = ({verifiedByStaff, startVerification}) => {
   };
 
   useEffect(() => {
-    if (!verifiedByStaff) startVerification();
-
     // Fetch loan transactions from the API
     fetch('https://express-server-1.fly.dev/api/loan-transactions')
       .then((response) => response.json())
