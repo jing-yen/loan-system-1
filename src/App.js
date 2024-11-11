@@ -44,7 +44,7 @@ function App() {
       <CartProvider>
       <LocationProvider>
           <Navbar />
-          <VerifyPIN setVerifiedByStaff={handleVerificationResponse} verifying={verifying}>\
+          <VerifyPIN setVerifiedByStaff={handleVerificationResponse} verifying={verifying}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/catalogue" element={<Catalogue startVerification={startVerificationProcess} verifiedByStaff={verifiedByStaff}/>} />
