@@ -2,7 +2,7 @@ import './styles/App.css';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Catalogue from './pages/Catalogue';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import NewBorrowForm from './components/NewBorrowForm';
 import NewCollectForm from './components/NewCollectForm';
 import NewReturnForm from './components/NewReturnForm';
@@ -28,17 +28,18 @@ function App() {
     setVerifying(false);
   }
 
-  window.history.pushState = (...args) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log('Location changed:', location);
     setVerifiedByStaff(false);
     setVerifying(false);
-    return window.history.pushState(this, args);
-  }
+  }, [location.pathname]);
 
   return (
     <div className="App">
       <CartProvider>
       <LocationProvider>
-        <Router>
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -55,7 +56,6 @@ function App() {
             </Routes>
           </VerifyPIN>
         }
-        </Router>
       </LocationProvider>
       </CartProvider>
     </div>
