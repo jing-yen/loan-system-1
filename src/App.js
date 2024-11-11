@@ -31,10 +31,10 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    console.log('Location changed:', location);
-    if (!verifiedByStaff && location.pathname=='/dashboard') startVerificationProcess();
+    console.log('Location changed:', location, location.pathname=='/dashboard');
     setVerifiedByStaff(false);
-    setVerifying(false);
+    if (location.pathname=='/dashboard') startVerificationProcess();
+    else setVerifying(false);
   }, [location.pathname]);
 
   return (

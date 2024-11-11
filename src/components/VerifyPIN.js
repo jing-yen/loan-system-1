@@ -20,6 +20,7 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
     }, [verifying]);
 
     const registerCredential = async () => {
+        console.log('hi');
         try {
             setPasswordLess(true);
             const publicKeyCredentialCreationOptions = {
