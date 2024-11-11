@@ -5,8 +5,6 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
     const [password, setPassword] = useState('');
     const [passwordLess, setPasswordLess] = useState(true);
 
-    const inputElement = useRef(null);
-
     const handlePasswordSubmit = (e) => {
         e.preventDefault();
         const correctPassword = '003342'; // Hub's favourite password
@@ -20,10 +18,6 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
             registerCredential();
         }
     }, [verifying]);
-
-    useEffect(() => {
-        if (inputElement.current) inputElement.current.focus();
-    }, [inputElement]);
 
     const registerCredential = async () => {
         try {
@@ -74,7 +68,6 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
             <form className="password-form" onSubmit={handlePasswordSubmit}>
                 <h2>Verify to Continue</h2>
                 <input
-                ref={inputElement}
                 type="password"
                 pattern="[0-9]*" inputmode="numeric"
                 autoFocus
