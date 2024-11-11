@@ -1,27 +1,27 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import '../styles/NewBorrowForm.css';
 
-function VerifyPIN({setVerifiedByStaff, startVerification, children}) {
+function VerifyPIN({setVerifiedByStaff, verifying, children}) {
     const [password, setPassword] = useState('');
-    const [showUI, setShowUI] = useState(false);
+    const [passwordLess, setPasswordLess] = useState(true);
 
     const handlePasswordSubmit = (e) => {
         e.preventDefault();
         const correctPassword = '003342'; // Hub's favourite password
         setVerifiedByStaff(password === correctPassword);
         if (password !== correctPassword) alert('Incorrect password');
-        setShowUI(false);
         setPassword('');
     };
 
     useEffect(() => {
-        if (startVerification) {
+        if (verifying) {
             registerCredential();
         }
-    }, [startVerification]);
+    }, [verifying]);
 
     const registerCredential = async () => {
         try {
+            setPasswordLess(true);
             const publicKeyCredentialCreationOptions = {
                 challenge: new Uint8Array([0x8C, 0xFA, 0xB3, 0xA9, 0x42, 0xF5, 0x89, 0xDE]), // Example challenge
                 rp: { name: "Your App Name" },
@@ -56,11 +56,12 @@ function VerifyPIN({setVerifiedByStaff, startVerification, children}) {
             }
         } catch (err) {
             console.error('Credential registration failed:', err);
-            setShowUI(true);
+            setPasswordLess(false);
         }
     };
     
-    if (!showUI) return children;
+    if (!verifying) return children;
+    if (passwordLess) return <div className="password-form-container"></div>;
     
     return (
         <div className="password-form-container">

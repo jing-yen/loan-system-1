@@ -23,11 +23,16 @@ function App() {
   }
 
   const handleVerificationResponse = (verified) => {
-      setVerifiedByStaff(verified);
-      setVerifying(false);
+    console.log('Verification response:', verified);
+    setVerifiedByStaff(verified);
+    setVerifying(false);
   }
 
-  window.addEventListener('popstate', () => setVerifiedByStaff(false));
+  window.history.pushState = (...args) => {
+    setVerifiedByStaff(false);
+    setVerifying(false);
+    return window.history.pushState(this, args);
+  }
 
   return (
     <div className="App">
@@ -42,11 +47,11 @@ function App() {
             <Route path="/booking" element={<OutlookBooking /> /*not used*/} />
           </Routes>
         {window.location.host != 'edic.vercel.app' /*only on edic-vercel.app*/ && 
-          <VerifyPIN handleVerificationResponse={handleVerificationResponse} setVerifiedByStaff={setVerifiedByStaff} startVerification={verifying}>
+          <VerifyPIN setVerifiedByStaff={handleVerificationResponse} verifying={verifying}>
             <Routes>
               <Route path="/new-collect-form" element={<NewCollectForm startVerification={startVerificationProcess} verifiedByStaff={verifiedByStaff}/>} />
               <Route path="/new-return-form" element={<NewReturnForm startVerification={startVerificationProcess} verifiedByStaff={verifiedByStaff} />} />
-              <Route path="/dashboard" element={<LoanDashboard startVerification={startVerificationProcess} />} />
+              <Route path="/dashboard" element={<LoanDashboard startVerification={startVerificationProcess} verifiedByStaff={verifiedByStaff} />} />
             </Routes>
           </VerifyPIN>
         }

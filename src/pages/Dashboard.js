@@ -27,7 +27,7 @@ ChartJS.register(
   ArcElement
 );
 
-const LoanDashboard = ({setVerifiedByStaff, startVerification}) => {
+const LoanDashboard = ({verifiedByStaff, startVerification}) => {
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [selectedChart, setSelectedChart] = useState('loansPerMonth');
   const [modalItem, setModalItem] = useState(null);
@@ -177,7 +177,7 @@ const LoanDashboard = ({setVerifiedByStaff, startVerification}) => {
   };
 
   useEffect(() => {
-    startVerification();
+    if (!verifiedByStaff) startVerification();
 
     // Fetch loan transactions from the API
     fetch('https://express-server-1.fly.dev/api/loan-transactions')
@@ -343,8 +343,10 @@ const LoanDashboard = ({setVerifiedByStaff, startVerification}) => {
     ],
   };
 
+  if (!verifiedByStaff) return <></>;
+
   return (
-    <>
+    <div className="content-area">
       {/** Modal for selected item **/}
       <Modal isOpen={modalItem} onClose={() => setModalItem(null)}>
         {modalItem && modalItem.item_name && (<>
@@ -545,7 +547,7 @@ const LoanDashboard = ({setVerifiedByStaff, startVerification}) => {
       )}
       <br />
       <br />
-    </>);
+    </div>);
 };
 
 export default LoanDashboard;
