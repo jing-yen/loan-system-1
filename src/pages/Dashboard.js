@@ -341,8 +341,6 @@ const LoanDashboard = ({verifiedByStaff, startVerification}) => {
     ],
   };
 
-  if (!verifiedByStaff) return <></>;
-
   return (
     <div className="content-area">
       {/** Modal for selected item **/}
