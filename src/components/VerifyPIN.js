@@ -60,24 +60,26 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
         }
     };
     
-    if (!verifying) return children;
-    if (passwordLess) return <div className="password-form-container"></div>;
-    
     return (
-        <div className="password-form-container">
-            <form className="password-form" onSubmit={handlePasswordSubmit}>
-                <h2>Verify to Continue</h2>
-                <input
-                type="password"
-                pattern="[0-9]*" inputmode="numeric"
-                autoFocus
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type="submit">Submit</button>
-            </form>
-        </div>);
+        <>
+        { verifying && <div className="password-form-container">
+            {!passwordLess &&
+                <form className="password-form" onSubmit={handlePasswordSubmit}>
+                    <h2>Verify to Continue</h2>
+                    <input
+                        type="password"
+                        pattern="[0-9]*" inputmode="numeric"
+                        autoFocus
+                        placeholder="Enter password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button type="submit">Submit</button>
+                </form>
+            }
+        </div> }
+        <div style={{display:verifying?'none':'block'}}>{children}</div>
+        </>);
 }
 
 export default VerifyPIN;

@@ -28,7 +28,7 @@ function App() {
     console.log('Verification response:', verified);
     setVerifiedByStaff(verified);
     setVerifying(false); 
-    if (location.pathname=='/catalogue' && verified) navigate('/dashboard')
+    if (location.pathname=='/catalogue' && verified) navigate('/dashboard');
   }
 
 
