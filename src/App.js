@@ -55,7 +55,7 @@ function App() {
             <Routes>
               <Route path="/new-collect-form" element={<NewCollectForm startVerification={startVerificationProcess} verifiedByStaff={verifiedByStaff}/>} />
               <Route path="/new-return-form" element={<NewReturnForm startVerification={startVerificationProcess} verifiedByStaff={verifiedByStaff} />} />
-              <Route path="/dashboard" element={<LoanDashboard startVerification={startVerificationProcess} verifiedByStaff={verifiedByStaff} />} />
+              <Route path="/dashboard" element={<LoanDashboard startVerification={()=>alert('hi')} verifiedByStaff={verifiedByStaff} />} />
             </Routes>
             }
           </VerifyPIN>
