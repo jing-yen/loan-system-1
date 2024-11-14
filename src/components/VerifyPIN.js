@@ -59,7 +59,6 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
             setPasswordLess(false);
         }
     };
-    return children;
     
     return (
         <>
@@ -79,7 +78,7 @@ function VerifyPIN({setVerifiedByStaff, verifying, children}) {
                 </form>
             }
         </div> }
-        <div style={{visibility:verifying?'none':'block'}}>{children}</div>
+        <div style={{display:verifying?'none':'block'}}>{children}</div>
         </>);
 }
 
