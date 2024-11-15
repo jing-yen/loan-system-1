@@ -116,8 +116,12 @@ function Home() {
       <fieldset className='home-button-fieldset'>
         <legend>  Loan System  </legend>
         <button className='home-button' onClick={()=>navigate('/catalogue')}>🛒 Look at the Catalogue</button>
-        <button className='home-button'onClick={toggleCollections}>📦 Collect</button>
-        <button className='home-button' onClick={toggleReturns}>↩️ Return</button>
+        {window.location.host != 'edic.vercel.app' /*only on edic-vercel.app*/ && 
+          <>
+          <button className='home-button'onClick={toggleCollections}>📦 Collect</button>
+          <button className='home-button' onClick={toggleReturns}>↩️ Return</button>
+          </>
+        }
       </fieldset>
     </div>
   );
