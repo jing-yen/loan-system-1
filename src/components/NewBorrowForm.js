@@ -188,6 +188,10 @@ function NewBorrowForm() {
                         </div>
                     );
                 })}
+                <p style={{fontSize:'12px', color:'#666', width:'100%'}}>We collect your personal data to contact you regarding your loan transaction. Your data may be disclosed to third parties solely for this purpose.</p>
+                
+                <p style={{fontSize:'12px', color:'#666', width:'100%'}}>By submitting this form, you consent to the collection, use, and disclosure of your data as described above. Please review your information for accuracy before clicking "Submit."</p>
+
                 <button type="submit" disabled={isSubmitting} className="submit-button">Submit</button>
             </form>
         </div>

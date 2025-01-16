@@ -123,6 +123,10 @@ function Home() {
           </>
         }
       </fieldset>
+      <br/>
+      <footer>
+        <p style={{textAlign:'center', fontSize:'12px', color:'#666'}}>© 2025 EDIC. To access/update/delete your personal data, <a href="mailto:cdebox51@nus.edu.sg">email us here</a>.</p>
+      </footer>
     </div>
   );
 }
