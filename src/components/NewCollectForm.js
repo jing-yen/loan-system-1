@@ -3,6 +3,8 @@ import '../styles/NewBorrowForm.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function NewCollectForm({verifiedByStaff, startVerification}) {
     const location = useLocation();
     const loanDetails = useMemo(() => location.state?.loanDetails || {});
@@ -86,7 +88,7 @@ function NewCollectForm({verifiedByStaff, startVerification}) {
                 };
 
                 console.log('Submitting form with data:', formDataToSend);
-                await axios.post('https://express-server-1.fly.dev/api/loan-status/update', formDataToSend);
+                await axios.post(API_URL+'/api/loan-status/update', formDataToSend);
                 setIsSubmitted(true); // Set this on successful submission
             } catch (error) {
                 console.error('Error submitting form:', error);

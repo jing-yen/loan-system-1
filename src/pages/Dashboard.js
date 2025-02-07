@@ -27,6 +27,8 @@ ChartJS.register(
   ArcElement
 );
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const LoanDashboard = ({verifiedByStaff, startVerification}) => {
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [selectedChart, setSelectedChart] = useState('loansPerMonth');
@@ -178,21 +180,21 @@ const LoanDashboard = ({verifiedByStaff, startVerification}) => {
 
   useEffect(() => {
     // Fetch loan transactions from the API
-    fetch('https://express-server-1.fly.dev/api/loan-transactions')
+    fetch(API_URL+'/api/loan-transactions')
       .then((response) => response.json())
       .then((data) =>
         setLoanData(data.sort((a, b) => parseInt(b['transaction_id']) - parseInt(a['transaction_id'])))
       )
       .catch((error) => console.error('Error fetching loan transactions:', error));
 
-    fetch('https://express-server-1.fly.dev/api/inventory')
+    fetch(API_URL+'/api/inventory')
       .then((response) => response.json())
       .then((data) => 
         setInventoryData(data.sort((a, b) => parseInt(b['item_id']) - parseInt(a['item_id'])))
       )
       .catch((error) => console.error('Error fetching inventory:', error));
       
-    fetch('https://express-server-1.fly.dev/api/inventoryE2A')
+    fetch(API_URL+'/api/inventoryE2A')
     .then((response) => response.json())
     .then((data) => 
       setInventoryDataE2A(data.sort((a, b) => parseInt(b['item_id']) - parseInt(a['item_id'])))

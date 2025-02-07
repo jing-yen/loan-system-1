@@ -5,6 +5,8 @@ import axios from 'axios';
 import { useCart } from './CartContext';
 import { useWhichLocation } from './LocationContext';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function NewBorrowForm() {
     const location = useLocation();
     const { whichLocation } = useWhichLocation();
@@ -127,7 +129,7 @@ function NewBorrowForm() {
                 }
                 console.log(formDataToSend);
 
-                await axios.post('https://express-server-1.fly.dev/api/submit-form', formDataToSend);
+                await axios.post(API_URL+'/api/submit-form', formDataToSend);
                 setIsSubmitted(true); // Set this on successful submission
                 setCart([]);
             } catch (error) {
