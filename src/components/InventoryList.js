@@ -63,7 +63,7 @@ function InventoryList() {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const { cart, setCart } = useCart();
 
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const API_URL = process.env.REACT_APP_API_URL;
 
 
     // Create a function to group items with the same name and brand and add their quantities

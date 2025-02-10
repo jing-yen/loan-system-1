@@ -27,7 +27,7 @@ ChartJS.register(
   ArcElement
 );
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const LoanDashboard = ({verifiedByStaff, startVerification}) => {
   const [showTopBtn, setShowTopBtn] = useState(false);
