@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useCart } from '../CartContext';
 import { useWhichLocation } from '../LocationContext';
 import ReusableForm from './ReusableForm';
-import { isRequired, isValidEmail, isValidPhoneNumber, isNotWeekend } from '../../utils/validation';
+import { borrowFormValidationSchema } from '../../utils/validation';
 
 function NewBorrowForm() {
     const location = useLocation();
@@ -37,48 +37,8 @@ function NewBorrowForm() {
         ] : [])
     ];
 
-    const validationSchema = (formData, fields) => {
-        let newErrors = {};
+    const validationSchema = (formData) => borrowFormValidationSchema(formData, formFields, requiresApproval);
 
-        fields.forEach(field => {
-            if (!requiresApproval && (field.name === 'project_supervisor_name' || field.name === 'supervisor_email')) {
-                return; // Skip validation for supervisor fields if approval is not required
-            }
-            const value = formData[field.name];
-            switch (field.type) {
-                case 'text':
-                    if (field.name !== 'additional_remarks'){
-                        const requiredError = isRequired(value);
-                        if (requiredError) newErrors[field.name] = requiredError;
-                    }
-                    break;
-                case 'email':
-                    const requiredEmailError = isRequired(value);
-                    if (requiredEmailError) newErrors[field.name] = requiredEmailError;
-                    const emailError = isValidEmail(value);
-                    if (emailError && !newErrors[field.name]) newErrors[field.name] = emailError; // Only add if no required error
-                    break;
-                case 'tel':
-                    const requiredTelError = isRequired(value);
-                    if (requiredTelError) newErrors[field.name] = requiredTelError;
-                    const telError = isValidPhoneNumber(value);
-                    if (telError && !newErrors[field.name]) newErrors[field.name] = telError; // Only add if no required error
-                    break;
-                case 'date':
-                    const requiredDateError = isRequired(value);
-                    if (requiredDateError) newErrors[field.name] = requiredDateError;
-                    const weekendError = isNotWeekend(value);
-                    if (weekendError && !newErrors[field.name]) newErrors[field.name] = weekendError; // Only add if no required error
-                    break;
-                default:
-                    if (field.name !== 'additional_remarks'){
-                        const defaultRequiredError = isRequired(value);
-                        if (defaultRequiredError) newErrors[field.name] = defaultRequiredError;
-                    }
-            }
-        });
-        return newErrors;
-    };
 
     const handleSubmit = async (formData) => {
         console.log('hi0');

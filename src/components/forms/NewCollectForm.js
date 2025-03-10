@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
-import { isRequired, isNotWeekend } from '../../utils/validation';
+import { collectFormValidationSchema } from '../../utils/validation';
 
 function NewCollectForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
@@ -25,37 +25,8 @@ function NewCollectForm({ verifiedByStaff, startVerification }) {
         { name: 'serial_numbers', label: 'Serial Numbers', type: 'textarea' },
     ];
 
-    const validationSchema = (formData, fields) => {
-        let newErrors = {};
+    const validationSchema = (formData) => collectFormValidationSchema(formData, formFields, isVerified);
 
-        if (!isVerified) {
-            newErrors['verify'] = 'Get a staff to verify your collection';
-        }
-
-        fields.forEach(field => {
-            const value = formData[field.name];
-            switch (field.type) {
-                case 'text':
-                    if (field.name !== 'serial_numbers'){
-                        const requiredError = isRequired(value);
-                        if (requiredError) newErrors[field.name] = requiredError;
-                    }
-                    break;
-                case 'date':
-                    const requiredDateError = isRequired(value);
-                    if (requiredDateError) newErrors[field.name] = requiredDateError;
-                    const weekendError = isNotWeekend(value);
-                    if (weekendError && !newErrors[field.name]) newErrors[field.name] = weekendError; // Only add if no required error
-                    break;
-                default:
-                    if (field.name !== 'serial_numbers'){
-                        const defaultRequiredError = isRequired(value);
-                        if (defaultRequiredError) newErrors[field.name] = defaultRequiredError;
-                    }
-            }
-        });
-        return newErrors;
-    };
 
     const handleSubmit = async (formData) => {
         const formDataToSend = {

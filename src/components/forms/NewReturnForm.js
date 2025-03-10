@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
-import { isRequired, isValidPhoneNumber, isNotWeekend } from '../../utils/validation';
+import { returnFormValidationSchema } from '../../utils/validation';
 
 function NewReturnForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
@@ -26,47 +26,8 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
     ];
 
 
-    const validationSchema = (formData, fields) => {
-        let newErrors = {};
+    const validationSchema = (formData) => returnFormValidationSchema(formData, formFields, isVerified, loanDetails);
 
-        if (!isVerified) {
-            newErrors['verify'] = 'Get a staff to verify your collection';
-        }
-        if (formData.phone?.trim() != loanDetails.student_phone) {
-            newErrors['phone'] = 'Incorrect phone number';
-        }
-
-
-        fields.forEach(field => {
-            const value = formData[field.name];
-            switch (field.type) {
-                case 'text':
-                    if (field.name !== 'additional_remarks'){
-                        const requiredError = isRequired(value);
-                        if (requiredError) newErrors[field.name] = requiredError;
-                    }
-                    break;
-                case 'tel':
-                    const requiredTelError = isRequired(value);
-                    if (requiredTelError) newErrors[field.name] = requiredTelError;
-                    const telError = isValidPhoneNumber(value);
-                    if (telError && !newErrors[field.name]) newErrors[field.name] = telError; // Only add if no required error
-                    break;
-                case 'date':
-                    const requiredDateError = isRequired(value);
-                    if (requiredDateError) newErrors[field.name] = requiredDateError;
-                    const weekendError = isNotWeekend(value);
-                    if (weekendError && !newErrors[field.name]) newErrors[field.name] = weekendError; // Only add if no required error
-                    break;
-                default:
-                    if (field.name !== 'additional_remarks'){
-                        const defaultRequiredError = isRequired(value);
-                        if (defaultRequiredError) newErrors[field.name] = defaultRequiredError;
-                    }
-            }
-        });
-        return newErrors;
-    };
 
     const handleSubmit = async (formData) => {
         const formDataToSend = {
