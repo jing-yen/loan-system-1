@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useCart } from './CartContext';
 import { useWhichLocation } from './LocationContext';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : "";
 
 function NewBorrowForm() {
     const location = useLocation();
@@ -129,7 +129,7 @@ function NewBorrowForm() {
                 }
                 console.log(formDataToSend);
 
-                await axios.post(API_URL+'/api/submit-form', formDataToSend);
+                await axios.post('/api/submit-form', formDataToSend);
                 setIsSubmitted(true); // Set this on successful submission
                 setCart([]);
             } catch (error) {
