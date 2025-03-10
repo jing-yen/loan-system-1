@@ -3,8 +3,6 @@ import '../styles/NewBorrowForm.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : "";
-
 function NewReturnForm({verifiedByStaff, startVerification}) {
     const location = useLocation();
     const loanDetails = useMemo(() => location.state?.loanDetails || {});

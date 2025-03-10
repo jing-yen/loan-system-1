@@ -5,8 +5,6 @@ import axios from 'axios';
 import { useCart } from './CartContext';
 import { useWhichLocation } from './LocationContext';
 
-const API_URL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : "";
-
 function NewBorrowForm() {
     const location = useLocation();
     const { whichLocation } = useWhichLocation();
