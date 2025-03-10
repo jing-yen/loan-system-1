@@ -1,3 +1,5 @@
+// src/utils/validation.js
+
 class FormValidator {
     static validationRuleFunctions = {
         'required': FormValidator._isRequired, // Rule for required fields
@@ -7,24 +9,12 @@ class FormValidator {
     };
 
     static schemaDefinitions = {
-        // Borrow Form Schema
-        name: { type: 'text', rules: ['required'] },
-        email: { type: 'email', rules: ['required', 'emailFormat'] },
-        course_code: { type: 'text', rules: ['required'] },
-        project_code: { type: 'text', rules: ['required'] },
-        phone_number: { type: 'tel', rules: ['required', 'phoneNumber'] },
-        start_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
-        end_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
-        project_supervisor_name: { type: 'text', rules: [] }, // No rules initially, conditionally validated in component
-        supervisor_email: { type: 'email', rules: [] }, // No rules initially, conditionally validated in component
-
-        // Collect Form Schema
-        date: { type: 'date', rules: ['required', 'notWeekend'] },
-        staff_name: { type: 'text', rules: ['required'] },
-        serial_numbers: { type: 'textarea', rules: [] }, // No validation rules, not required
-
-        // Return Form Schema
-        phone: { type: 'tel', rules: ['required', 'phoneNumber'] }, // Shared type with borrowForm, context specific to returnForm
+        // Schema definitions by input type
+        text: { rules: ['required'] },
+        email: { rules: ['required', 'emailFormat'] },
+        tel: { rules: ['required', 'phoneNumber'] },
+        date: { rules: ['required', 'notWeekend'] },
+        textarea: { rules: [] }, // No default rules for textarea
     };
 
     // Public method to validate form data against the schema.
@@ -32,15 +22,22 @@ class FormValidator {
     static validate(formData, fields, extraValidation) {
         let newErrors = {};
 
+        // Iterate over each field in the form configuration.
         fields.forEach(field => {
-            const fieldSchema = FormValidator.schemaDefinitions[field.name];
+            // Retrieve the schema definition based on the field type.
+            const fieldSchema = FormValidator.schemaDefinitions[field.type];
+            // Check if a schema is defined for this field type and if it has validation rules.
             if (fieldSchema && fieldSchema.rules) {
+                // Iterate over each validation rule defined in the field type's schema.
                 fieldSchema.rules.forEach(ruleName => {
+                    // Retrieve the validation function from the registry using the rule name.
                     const validationFn = FormValidator.validationRuleFunctions[ruleName];
                     if (validationFn) {
                         try {
+                            // Execute the validation function with the field's value from formData.
                             validationFn(formData[field.name]);
                         } catch (error) {
+                            // If an error is caught, it means validation failed, add the error message to newErrors.
                             if (!newErrors[field.name]) {
                                 newErrors[field.name] = error.message;
                             }
@@ -57,6 +54,7 @@ class FormValidator {
             newErrors = { ...newErrors, ...extraErrors };
         }
 
+        // Return the object containing all validation errors.
         return newErrors;
     }
 
