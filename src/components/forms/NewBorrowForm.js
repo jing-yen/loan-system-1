@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useCart } from '../CartContext';
 import { useWhichLocation } from '../LocationContext';
 import ReusableForm from './ReusableForm';
-import { genericValidationSchema, borrowFormSchemaDefinition } from '../../utils/validation';
+import FormValidator from '../../utils/validation';
 
 function NewBorrowForm() {
     const location = useLocation();
@@ -38,8 +38,7 @@ function NewBorrowForm() {
     ];
 
     const validationSchema = (formData) => {
-        const schema = borrowFormSchemaDefinition;
-        let errors = genericValidationSchema(formData, formFields, schema);
+        let errors = FormValidator.validate(formData, formFields, 'borrowForm');
 
         return errors;
     };

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
-import { genericValidationSchema, returnFormSchemaDefinition } from '../../utils/validation';
+import FormValidator from '../../utils/validation';
 
 function NewReturnForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
@@ -26,8 +26,7 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
     ];
 
     const validationSchema = (formData) => {
-        const schema = returnFormSchemaDefinition;
-        let errors = genericValidationSchema(formData, formFields, schema, (formData) => {
+        let errors = FormValidator.validate(formData, formFields, 'returnForm', (formData) => {
             let extraErrors = {};
             if (!isVerified) {
                 extraErrors['verify'] = 'Get a staff to verify your return';

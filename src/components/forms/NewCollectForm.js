@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
-import { genericValidationSchema, collectFormSchemaDefinition } from '../../utils/validation';
+import FormValidator from '../../utils/validation';
 
 function NewCollectForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
@@ -26,8 +26,7 @@ function NewCollectForm({ verifiedByStaff, startVerification }) {
     ];
 
     const validationSchema = (formData) => {
-        const schema = collectFormSchemaDefinition;
-        let errors = genericValidationSchema(formData, formFields, schema, (formData) => {
+        let errors = FormValidator.validate(formData, formFields, 'collectForm', (formData) => {
             let extraErrors = {};
             if (!isVerified) {
                 extraErrors['verify'] = 'Get a staff to verify your collection';
