@@ -28,7 +28,7 @@ function NewBorrowForm() {
         { name: 'email', label: 'Email', type: 'email' },
         { name: 'course_code', label: 'Course Code', type: 'text' },
         { name: 'project_code', label: 'Project Code', type: 'text' },
-        { name: 'phone_number', label: 'Phone Number', type: 'number', minLength: 8, maxLength: 8 },
+        { name: 'phone_number', label: 'Phone Number', type: 'tel', minLength: 8, maxLength: 8 },
         { name: 'start_usage_date', label: 'Start Usage Date', type: 'date' },
         { name: 'end_usage_date', label: 'End Usage Date', type: 'date' },
         ...(requiresApproval ? [

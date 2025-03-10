@@ -32,16 +32,19 @@ function ReusableForm({ formTitle, itemDescription, fields, validationSchema, on
     const validateForm = () => {
         let newErrors = validationSchema(formData);
         setErrors(newErrors);
+        console.log('eror',newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
+        console.log('hihi:');
         e.preventDefault();
         if (isSubmitting) return;
         setIsSubmitting(true);
 
         if (validateForm()) {
             try {
+                console.log('Form submitting:', formData);
                 await onSubmit(formData);
                 setIsSubmitted(true);
             } catch (error) {
