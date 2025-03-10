@@ -45,12 +45,14 @@ class FormValidator {
                     // Retrieve the validation function from the registry using the rule name.
                     const validationFn = FormValidator.validationRuleFunctions[ruleName];
                     if (validationFn) {
-                        // Execute the validation function with the field's value from formData.
-                        const error = validationFn(formData[field.name]);
-                        // If an error is returned and no error has been recorded for this field yet,
-                        // add the error message to the newErrors object.
-                        if (error && !newErrors[field.name]) {
-                            newErrors[field.name] = error;
+                        try {
+                            // Execute the validation function with the field's value from formData.
+                            validationFn(formData[field.name]);
+                        } catch (error) {
+                            // If an error is caught, it means validation failed, add the error message to newErrors.
+                            if (!newErrors[field.name]) {
+                                newErrors[field.name] = error.message;
+                            }
                         }
                     }
                 });
@@ -72,49 +74,46 @@ class FormValidator {
      * Private validation function for required fields.
      * Checks if a value is not null, undefined, or an empty string after trimming whitespace.
      * @param {*} value The value to validate.
-     * @returns {string|undefined} An error message string if validation fails, undefined otherwise.
+     * @throws {Error} If the value is null, undefined, or an empty string.
      * @private
      */
     static _isRequired(value) {
         if (!value || value.trim() === '') {
-            return 'Field cannot be blank';
+            throw new Error('Field cannot be blank');
         }
-        return undefined; // Return undefined if validation passes (no error).
     }
 
     /**
      * Private validation function for email format.
      * Uses a regular expression to check if the value is a valid email format.
      * @param {string} value The value to validate.
-     * @returns {string|undefined} An error message string if validation fails, undefined otherwise.
+     * @throws {Error} If the value is not a valid email format.
      * @private
      */
     static _isValidEmail(value) {
         if (value && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value.trim())) {
-            return 'Invalid email format';
+            throw new Error('Invalid email format');
         }
-        return undefined; // Return undefined if validation passes (no error).
     }
 
     /**
      * Private validation function for phone number format (8 digits).
      * Checks if the value is exactly 8 digits long.
      * @param {string} value The value to validate.
-     * @returns {string|undefined} An error message string if validation fails, undefined otherwise.
+     * @throws {Error} If the value is not exactly 8 digits long.
      * @private
      */
     static _isValidPhoneNumber(value) {
         if (value && value.length !== 8) {
-            return 'Invalid phone number';
+            throw new Error('Invalid phone number');
         }
-        return undefined; // Return undefined if validation passes (no error).
     }
 
     /**
      * Private validation function to check for weekend dates.
      * Validates that the date string does not fall on a Saturday or Sunday.
      * @param {string} dateString The date string to validate.
-     * @returns {string|undefined} An error message string if validation fails, undefined otherwise.
+     * @throws {Error} If the date falls on a weekend.
      * @private
      */
     static _isNotWeekend(dateString) {
@@ -122,10 +121,9 @@ class FormValidator {
             const date = new Date(dateString);
             const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
             if (dayOfWeek === 0 || dayOfWeek === 6) {
-                return 'Weekend dates are not allowed';
+                throw new Error('Weekend dates are not allowed');
             }
         }
-        return undefined; // Return undefined if validation passes (no error).
     }
 }
 
