@@ -1,6 +1,11 @@
-// src/utils/validation.js
-
 class FormValidator {
+    static validationRuleFunctions = {
+        'required': FormValidator._isRequired, // Rule for required fields
+        'emailFormat': FormValidator._isValidEmail, // Rule for email format validation
+        'phoneNumber': FormValidator._isValidPhoneNumber, // Rule for phone number validation
+        'notWeekend': FormValidator._isNotWeekend, // Rule to check if date is not a weekend
+    };
+
     static schemaDefinitions = {
         // Borrow Form Schema
         name: { type: 'text', rules: ['required'] },
@@ -22,34 +27,20 @@ class FormValidator {
         phone: { type: 'tel', rules: ['required', 'phoneNumber'] }, // Shared type with borrowForm, context specific to returnForm
     };
 
-    static validationRuleFunctions = {
-        'required': FormValidator._isRequired, // Rule for required fields
-        'emailFormat': FormValidator._isValidEmail, // Rule for email format validation
-        'phoneNumber': FormValidator._isValidPhoneNumber, // Rule for phone number validation
-        'notWeekend': FormValidator._isNotWeekend, // Rule to check if date is not a weekend
-    };
-
     // Public method to validate form data against the schema.
     // Accepts formData, fields configuration, and an optional extraValidation function.
-    static validate(formData, fields, extraValidation) { // Removed formName parameter
+    static validate(formData, fields, extraValidation) {
         let newErrors = {};
 
-        // Iterate over each field in the form configuration.
         fields.forEach(field => {
-            // Retrieve the schema definition for the current field using field.name as key.
             const fieldSchema = FormValidator.schemaDefinitions[field.name];
-            // Check if a schema is defined for this field and if it has validation rules.
             if (fieldSchema && fieldSchema.rules) {
-                // Iterate over each validation rule defined in the field's schema.
                 fieldSchema.rules.forEach(ruleName => {
-                    // Retrieve the validation function from the registry using the rule name.
                     const validationFn = FormValidator.validationRuleFunctions[ruleName];
                     if (validationFn) {
                         try {
-                            // Execute the validation function with the field's value from formData.
                             validationFn(formData[field.name]);
                         } catch (error) {
-                            // If an error is caught, it means validation failed, add the error message to newErrors.
                             if (!newErrors[field.name]) {
                                 newErrors[field.name] = error.message;
                             }
@@ -66,7 +57,6 @@ class FormValidator {
             newErrors = { ...newErrors, ...extraErrors };
         }
 
-        // Return the object containing all validation errors.
         return newErrors;
     }
 
