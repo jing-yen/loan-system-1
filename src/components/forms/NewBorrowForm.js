@@ -45,19 +45,24 @@ function NewBorrowForm() {
                 return; // Skip validation for supervisor fields if approval is not required
             }
             if (field.name !== 'additional_remarks') {
-                newErrors[field.name] = isRequired(formData[field.name]);
+                const requiredError = isRequired(formData[field.name]);
+                if (requiredError) newErrors[field.name] = requiredError;
             }
             if (field.name === 'email') {
-                newErrors[field.name] = isValidEmail(formData[field.name]) || newErrors[field.name];
+                const emailError = isValidEmail(formData[field.name]);
+                if (emailError) newErrors[field.name] = emailError;
             }
             if (field.name === 'supervisor_email') {
-                newErrors[field.name] = isValidEmail(formData[field.name]) || newErrors[field.name];
+                const supervisorEmailError = isValidEmail(formData[field.name]);
+                if (supervisorEmailError) newErrors[field.name] = supervisorEmailError;
             }
             if (field.name === 'phone_number') {
-                newErrors[field.name] = isValidPhoneNumber(formData[field.name]) || newErrors[field.name];
+                const phoneError = isValidPhoneNumber(formData[field.name]);
+                if (phoneError) newErrors[field.name] = phoneError;
             }
             if (field.name === 'start_usage_date' || field.name === 'end_usage_date') {
-                newErrors[field.name] = isNotWeekend(formData[field.name]) || newErrors[field.name];
+                const weekendError = isNotWeekend(formData[field.name]);
+                if (weekendError) newErrors[field.name] = weekendError;
             }
         });
         return newErrors;

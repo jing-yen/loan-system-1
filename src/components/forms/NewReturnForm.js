@@ -39,13 +39,16 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
 
         formFields.forEach(field => {
             if (field.name !== 'additional_remarks') {
-                newErrors[field.name] = isRequired(formData[field.name]);
+                const requiredError = isRequired(formData[field.name]);
+                if (requiredError) newErrors[field.name] = requiredError;
             }
             if (field.name === 'phone') {
-                newErrors[field.name] = isValidPhoneNumber(formData[field.name]) || newErrors[field.name];
+                const phoneError = isValidPhoneNumber(formData[field.name]);
+                if (phoneError) newErrors[field.name] = phoneError;
             }
             if (field.name === 'date') {
-                newErrors[field.name] = isNotWeekend(formData[field.name]) || newErrors[field.name];
+                const weekendError = isNotWeekend(formData[field.name]);
+                if (weekendError) newErrors[field.name] = weekendError;
             }
         });
         return newErrors;
