@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useCart } from '../CartContext';
 import { useWhichLocation } from '../LocationContext';
 import ReusableForm from './ReusableForm';
-import { genericValidationSchema, borrowFormSchemaDefinition, isValidEmail } from '../../utils/validation';
+import { genericValidationSchema, borrowFormSchemaDefinition } from '../../utils/validation';
 
 function NewBorrowForm() {
     const location = useLocation();
@@ -40,13 +40,6 @@ function NewBorrowForm() {
     const validationSchema = (formData) => {
         const schema = borrowFormSchemaDefinition;
         let errors = genericValidationSchema(formData, formFields, schema);
-
-        if (requiresApproval) {
-            const supervisorEmailError = isValidEmail(formData.supervisor_email);
-            if (supervisorEmailError && !errors.supervisor_email) errors.supervisor_email = supervisorEmailError;
-            if (!formData.project_supervisor_name?.trim() && !errors.project_supervisor_name) errors.project_supervisor_name = 'Field cannot be blank';
-            if (!formData.supervisor_email?.trim() && !errors.supervisor_email) errors.supervisor_email = 'Field cannot be blank';
-        }
 
         return errors;
     };

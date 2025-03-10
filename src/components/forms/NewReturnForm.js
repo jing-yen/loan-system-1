@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
-import { genericValidationSchema, returnFormSchemaDefinition, isValidPhoneNumber } from '../../utils/validation';
+import { genericValidationSchema, returnFormSchemaDefinition } from '../../utils/validation';
 
 function NewReturnForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();

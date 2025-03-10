@@ -1,27 +1,27 @@
 // src/utils/validation.js
 
-export const isRequired = (value) => {
+const isRequired = (value) => {
     if (!value || value.trim() === '') {
         return 'Field cannot be blank';
     }
     return undefined;
 };
 
-export const isValidEmail = (value) => {
+const isValidEmail = (value) => {
     if (value && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value.trim())) {
         return 'Invalid email format';
     }
     return undefined;
 };
 
-export const isValidPhoneNumber = (value) => {
+const isValidPhoneNumber = (value) => {
     if (value && value.length !== 8) {
         return 'Invalid phone number';
     }
     return undefined;
 };
 
-export const isNotWeekend = (dateString) => {
+const isNotWeekend = (dateString) => {
     if (dateString) {
         const date = new Date(dateString);
         const dayOfWeek = date.getDay();
@@ -49,8 +49,8 @@ export const borrowFormSchemaDefinition = {
     phone_number: { type: 'tel', rules: ['required', 'phoneNumber'] },
     start_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
     end_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
-    project_supervisor_name: { type: 'text', rules: [] }, // conditionally required, validation handled in component
-    supervisor_email: { type: 'email', rules: [] }, // conditionally required, validation handled in component
+    project_supervisor_name: { type: 'text', rules: ['required'] }, // only checked when approval is required (otherwise field is disabled)
+    supervisor_email: { type: 'email', rules: ['required'] }, // only checked when approval is required (otherwise field is disabled)
 };
 
 export const collectFormSchemaDefinition = {
