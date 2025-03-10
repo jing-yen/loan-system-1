@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useCart } from '../CartContext';
 import { useWhichLocation } from '../LocationContext';
 import ReusableForm from './ReusableForm';
+import { isRequired, isValidEmail, isValidPhoneNumber, isNotWeekend } from '../../utils/validation';
 
 function NewBorrowForm() {
     const location = useLocation();
@@ -38,27 +39,25 @@ function NewBorrowForm() {
 
     const validationSchema = (formData) => {
         let newErrors = {};
-        const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
         formFields.forEach(field => {
             if (!requiresApproval && (field.name === 'project_supervisor_name' || field.name === 'supervisor_email')) {
                 return; // Skip validation for supervisor fields if approval is not required
             }
-            if (!formData[field.name]?.trim() && field.name !== 'additional_remarks') {
-                newErrors[field.name] = 'Field cannot be blank';
+            if (field.name !== 'additional_remarks') {
+                newErrors[field.name] = isRequired(formData[field.name]);
             }
-            if ((field.name === 'email' || field.name === 'supervisor_email') && formData[field.name] && !emailRegex.test(formData[field.name].trim())) {
-                newErrors[field.name] = 'Invalid email format';
+            if (field.name === 'email') {
+                newErrors[field.name] = isValidEmail(formData[field.name]) || newErrors[field.name];
             }
-            if ((field.name === 'phone_number') && formData[field.name] && formData[field.name].length !== 8) {
-                newErrors[field.name] = 'Invalid phone number';
+            if (field.name === 'supervisor_email') {
+                newErrors[field.name] = isValidEmail(formData[field.name]) || newErrors[field.name];
             }
-            if ((field.name === 'start_usage_date' || field.name === 'end_usage_date') && formData[field.name]) {
-                const date = new Date(formData[field.name]);
-                const dayOfWeek = date.getDay();
-                if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    newErrors[field.name] = 'Weekend dates are not allowed';
-                }
+            if (field.name === 'phone_number') {
+                newErrors[field.name] = isValidPhoneNumber(formData[field.name]) || newErrors[field.name];
+            }
+            if (field.name === 'start_usage_date' || field.name === 'end_usage_date') {
+                newErrors[field.name] = isNotWeekend(formData[field.name]) || newErrors[field.name];
             }
         });
         return newErrors;

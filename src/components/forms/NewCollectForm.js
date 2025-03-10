@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
+import { isRequired, isNotWeekend } from '../../utils/validation';
 
 function NewCollectForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
@@ -32,15 +33,11 @@ function NewCollectForm({ verifiedByStaff, startVerification }) {
         }
 
         formFields.forEach(field => {
-            if (!formData[field.name]?.trim() && field.name !== 'serial_numbers') {
-                newErrors[field.name] = 'Field cannot be blank';
+            if (field.name !== 'serial_numbers') {
+                newErrors[field.name] = isRequired(formData[field.name]);
             }
-            if ((field.name === 'date') && formData[field.name]) {
-                const date = new Date(formData[field.name]);
-                const dayOfWeek = date.getDay();
-                if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    newErrors[field.name] = 'Weekend dates are not allowed';
-                }
+            if (field.name === 'date') {
+                newErrors[field.name] = isNotWeekend(formData[field.name]) || newErrors[field.name];
             }
         });
         return newErrors;

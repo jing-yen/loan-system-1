@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
+import { isRequired, isValidPhoneNumber, isNotWeekend } from '../../utils/validation';
 
 function NewReturnForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
@@ -37,15 +38,14 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
 
 
         formFields.forEach(field => {
-            if (!formData[field.name]?.trim() && field.name !== 'additional_remarks') {
-                newErrors[field.name] = 'Field cannot be blank';
+            if (field.name !== 'additional_remarks') {
+                newErrors[field.name] = isRequired(formData[field.name]);
             }
-            if ((field.name === 'date') && formData[field.name]) {
-                const date = new Date(formData[field.name]);
-                const dayOfWeek = date.getDay();
-                if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    newErrors[field.name] = 'Weekend dates are not allowed';
-                }
+            if (field.name === 'phone') {
+                newErrors[field.name] = isValidPhoneNumber(formData[field.name]) || newErrors[field.name];
+            }
+            if (field.name === 'date') {
+                newErrors[field.name] = isNotWeekend(formData[field.name]) || newErrors[field.name];
             }
         });
         return newErrors;
