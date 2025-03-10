@@ -30,7 +30,7 @@ function ReusableForm({ formTitle, itemDescription, fields, validationSchema, on
     };
 
     const validateForm = () => {
-        let newErrors = validationSchema(formData);
+        let newErrors = validationSchema(formData, fields);
         setErrors(newErrors);
         console.log('eror',newErrors);
         return Object.keys(newErrors).length === 0;

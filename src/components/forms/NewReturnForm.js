@@ -22,11 +22,11 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
     const formFields = [
         { name: 'date', label: 'Date', type: 'date', defaultValue: new Date().toISOString().split('T')[0] },
         { name: 'staff_name', label: 'Staff Name', type: 'text' },
-        { name: 'phone', label: 'Phone', type: 'number', minLength: 8, maxLength: 8, defaultValue: loanDetails.student_phone },
+        { name: 'phone', label: 'Phone', type: 'tel', minLength: 8, maxLength: 8, defaultValue: loanDetails.student_phone },
     ];
 
 
-    const validationSchema = (formData) => {
+    const validationSchema = (formData, fields) => {
         let newErrors = {};
 
         if (!isVerified) {
@@ -37,18 +37,32 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
         }
 
 
-        formFields.forEach(field => {
-            if (field.name !== 'additional_remarks') {
-                const requiredError = isRequired(formData[field.name]);
-                if (requiredError) newErrors[field.name] = requiredError;
-            }
-            if (field.name === 'phone') {
-                const phoneError = isValidPhoneNumber(formData[field.name]);
-                if (phoneError) newErrors[field.name] = phoneError;
-            }
-            if (field.name === 'date') {
-                const weekendError = isNotWeekend(formData[field.name]);
-                if (weekendError) newErrors[field.name] = weekendError;
+        fields.forEach(field => {
+            const value = formData[field.name];
+            switch (field.type) {
+                case 'text':
+                    if (field.name !== 'additional_remarks'){
+                        const requiredError = isRequired(value);
+                        if (requiredError) newErrors[field.name] = requiredError;
+                    }
+                    break;
+                case 'tel':
+                    const requiredTelError = isRequired(value);
+                    if (requiredTelError) newErrors[field.name] = requiredTelError;
+                    const telError = isValidPhoneNumber(value);
+                    if (telError && !newErrors[field.name]) newErrors[field.name] = telError; // Only add if no required error
+                    break;
+                case 'date':
+                    const requiredDateError = isRequired(value);
+                    if (requiredDateError) newErrors[field.name] = requiredDateError;
+                    const weekendError = isNotWeekend(value);
+                    if (weekendError && !newErrors[field.name]) newErrors[field.name] = weekendError; // Only add if no required error
+                    break;
+                default:
+                    if (field.name !== 'additional_remarks'){
+                        const defaultRequiredError = isRequired(value);
+                        if (defaultRequiredError) newErrors[field.name] = defaultRequiredError;
+                    }
             }
         });
         return newErrors;

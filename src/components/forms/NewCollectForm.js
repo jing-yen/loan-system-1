@@ -25,21 +25,33 @@ function NewCollectForm({ verifiedByStaff, startVerification }) {
         { name: 'serial_numbers', label: 'Serial Numbers', type: 'textarea' },
     ];
 
-    const validationSchema = (formData) => {
+    const validationSchema = (formData, fields) => {
         let newErrors = {};
 
         if (!isVerified) {
             newErrors['verify'] = 'Get a staff to verify your collection';
         }
 
-        formFields.forEach(field => {
-            if (field.name !== 'serial_numbers') {
-                const requiredError = isRequired(formData[field.name]);
-                if (requiredError) newErrors[field.name] = requiredError;
-            }
-            if (field.name === 'date') {
-                const weekendError = isNotWeekend(formData[field.name]);
-                if (weekendError) newErrors[field.name] = weekendError;
+        fields.forEach(field => {
+            const value = formData[field.name];
+            switch (field.type) {
+                case 'text':
+                    if (field.name !== 'serial_numbers'){
+                        const requiredError = isRequired(value);
+                        if (requiredError) newErrors[field.name] = requiredError;
+                    }
+                    break;
+                case 'date':
+                    const requiredDateError = isRequired(value);
+                    if (requiredDateError) newErrors[field.name] = requiredDateError;
+                    const weekendError = isNotWeekend(value);
+                    if (weekendError && !newErrors[field.name]) newErrors[field.name] = weekendError; // Only add if no required error
+                    break;
+                default:
+                    if (field.name !== 'serial_numbers'){
+                        const defaultRequiredError = isRequired(value);
+                        if (defaultRequiredError) newErrors[field.name] = defaultRequiredError;
+                    }
             }
         });
         return newErrors;

@@ -37,32 +37,44 @@ function NewBorrowForm() {
         ] : [])
     ];
 
-    const validationSchema = (formData) => {
+    const validationSchema = (formData, fields) => {
         let newErrors = {};
 
-        formFields.forEach(field => {
+        fields.forEach(field => {
             if (!requiresApproval && (field.name === 'project_supervisor_name' || field.name === 'supervisor_email')) {
                 return; // Skip validation for supervisor fields if approval is not required
             }
-            if (field.name !== 'additional_remarks') {
-                const requiredError = isRequired(formData[field.name]);
-                if (requiredError) newErrors[field.name] = requiredError;
-            }
-            if (field.name === 'email') {
-                const emailError = isValidEmail(formData[field.name]);
-                if (emailError) newErrors[field.name] = emailError;
-            }
-            if (field.name === 'supervisor_email') {
-                const supervisorEmailError = isValidEmail(formData[field.name]);
-                if (supervisorEmailError) newErrors[field.name] = supervisorEmailError;
-            }
-            if (field.name === 'phone_number') {
-                const phoneError = isValidPhoneNumber(formData[field.name]);
-                if (phoneError) newErrors[field.name] = phoneError;
-            }
-            if (field.name === 'start_usage_date' || field.name === 'end_usage_date') {
-                const weekendError = isNotWeekend(formData[field.name]);
-                if (weekendError) newErrors[field.name] = weekendError;
+            const value = formData[field.name];
+            switch (field.type) {
+                case 'text':
+                    if (field.name !== 'additional_remarks'){
+                        const requiredError = isRequired(value);
+                        if (requiredError) newErrors[field.name] = requiredError;
+                    }
+                    break;
+                case 'email':
+                    const requiredEmailError = isRequired(value);
+                    if (requiredEmailError) newErrors[field.name] = requiredEmailError;
+                    const emailError = isValidEmail(value);
+                    if (emailError && !newErrors[field.name]) newErrors[field.name] = emailError; // Only add if no required error
+                    break;
+                case 'tel':
+                    const requiredTelError = isRequired(value);
+                    if (requiredTelError) newErrors[field.name] = requiredTelError;
+                    const telError = isValidPhoneNumber(value);
+                    if (telError && !newErrors[field.name]) newErrors[field.name] = telError; // Only add if no required error
+                    break;
+                case 'date':
+                    const requiredDateError = isRequired(value);
+                    if (requiredDateError) newErrors[field.name] = requiredDateError;
+                    const weekendError = isNotWeekend(value);
+                    if (weekendError && !newErrors[field.name]) newErrors[field.name] = weekendError; // Only add if no required error
+                    break;
+                default:
+                    if (field.name !== 'additional_remarks'){
+                        const defaultRequiredError = isRequired(value);
+                        if (defaultRequiredError) newErrors[field.name] = defaultRequiredError;
+                    }
             }
         });
         return newErrors;
