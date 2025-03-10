@@ -26,7 +26,7 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
     ];
 
     const validationSchema = (formData) => {
-        let errors = FormValidator.validate(formData, formFields, 'returnForm', (formData) => {
+        let errors = FormValidator.validate(formData, formFields, (formData) => {
             let extraErrors = {};
             if (!isVerified) {
                 extraErrors['verify'] = 'Get a staff to verify your return';
@@ -50,7 +50,6 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
         };
         await axios.post('http://localhost:5000/api/loan-status/update', formDataToSend);
     };
-
 
     const extraContent = (
         <>

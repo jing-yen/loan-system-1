@@ -26,7 +26,7 @@ function NewCollectForm({ verifiedByStaff, startVerification }) {
     ];
 
     const validationSchema = (formData) => {
-        let errors = FormValidator.validate(formData, formFields, 'collectForm', (formData) => {
+        let errors = FormValidator.validate(formData, formFields, (formData) => {
             let extraErrors = {};
             if (!isVerified) {
                 extraErrors['verify'] = 'Get a staff to verify your collection';

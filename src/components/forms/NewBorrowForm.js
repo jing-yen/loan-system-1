@@ -38,7 +38,7 @@ function NewBorrowForm() {
     ];
 
     const validationSchema = (formData) => {
-        let errors = FormValidator.validate(formData, formFields, 'borrowForm');
+        let errors = FormValidator.validate(formData, formFields);
 
         return errors;
     };
