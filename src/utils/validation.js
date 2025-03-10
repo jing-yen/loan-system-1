@@ -2,10 +2,10 @@
 
 class FormValidator {
     static validationRuleFunctions = {
-        'required': FormValidator._isRequired, // Rule for required fields
-        'emailFormat': FormValidator._isValidEmail, // Rule for email format validation
-        'phoneNumber': FormValidator._isValidPhoneNumber, // Rule for phone number validation
-        'notWeekend': FormValidator._isNotWeekend, // Rule to check if date is not a weekend
+        'required': FormValidator._isRequired,
+        'emailFormat': FormValidator._isValidEmail,
+        'phoneNumber': FormValidator._isValidPhoneNumber,
+        'notWeekend': FormValidator._isNotWeekend,
     };
 
     static schemaDefinitions = {
@@ -17,44 +17,43 @@ class FormValidator {
         textarea: { rules: [] }, // No default rules for textarea
     };
 
-    // Public method to validate form data against the schema.
-    // Accepts formData, fields configuration, and an optional extraValidation function.
+    /**
+     * Public method to validate form data against the schema.
+     * @param {object} formData - The form data to validate.
+     * @param {array} fields - Configuration array for form fields.
+     * @param {function} [extraValidation] - An optional function for extra validation logic.
+     * @returns {object} An object containing validation errors, where keys are field names and values are error messages.
+     */
     static validate(formData, fields, extraValidation) {
         let newErrors = {};
 
-        // Iterate over each field in the form configuration.
-        fields.forEach(field => {
-            // Retrieve the schema definition based on the field type.
+        for (const field of fields) {
             const fieldSchema = FormValidator.schemaDefinitions[field.type];
-            // Check if a schema is defined for this field type and if it has validation rules.
-            if (fieldSchema && fieldSchema.rules) {
-                // Iterate over each validation rule defined in the field type's schema.
-                fieldSchema.rules.forEach(ruleName => {
-                    // Retrieve the validation function from the registry using the rule name.
-                    const validationFn = FormValidator.validationRuleFunctions[ruleName];
-                    if (validationFn) {
-                        try {
-                            // Execute the validation function with the field's value from formData.
-                            validationFn(formData[field.name]);
-                        } catch (error) {
-                            // If an error is caught, it means validation failed, add the error message to newErrors.
-                            if (!newErrors[field.name]) {
-                                newErrors[field.name] = error.message;
-                            }
-                        }
-                    }
-                });
+            if (!fieldSchema || !fieldSchema.rules) {
+                continue; // Skip fields without schema or rules
             }
-        });
 
-        // Apply extra validation if provided.
-        if (extraValidation) {
-            const extraErrors = extraValidation(formData);
-            // Merge extra errors into the main errors object.
-            newErrors = { ...newErrors, ...extraErrors };
+            for (const ruleName of fieldSchema.rules) {
+                const validationFn = FormValidator.validationRuleFunctions[ruleName];
+                if (!validationFn) {
+                    continue; // Skip unknown validation functions
+                }
+                try {
+                    validationFn(formData[field.name]);
+                } catch (error) {
+                    if (!newErrors[field.name]) {
+                        newErrors[field.name] = error.message; // Capture only the first error for each field
+                    }
+                    // Break after capturing the first error, no need to run further rules for this field
+                    break;
+                }
+            }
         }
 
-        // Return the object containing all validation errors.
+        if (extraValidation) {
+            Object.assign(newErrors, extraValidation(formData)); // Merge extra errors
+        }
+
         return newErrors;
     }
 
