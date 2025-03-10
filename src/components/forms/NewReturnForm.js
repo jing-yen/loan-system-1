@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
-import { returnFormValidationSchema } from '../../utils/validation';
+import { genericValidationSchema, returnFormSchemaDefinition, isValidPhoneNumber } from '../../utils/validation';
 
 function NewReturnForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
@@ -25,8 +25,21 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
         { name: 'phone', label: 'Phone', type: 'tel', minLength: 8, maxLength: 8, defaultValue: loanDetails.student_phone },
     ];
 
-
-    const validationSchema = (formData) => returnFormValidationSchema(formData, formFields, isVerified, loanDetails);
+    const validationSchema = (formData) => {
+        const schema = returnFormSchemaDefinition;
+        let errors = genericValidationSchema(formData, formFields, schema, (formData) => {
+            let extraErrors = {};
+            if (!isVerified) {
+                extraErrors['verify'] = 'Get a staff to verify your return';
+            }
+            if (formData.phone?.trim() != loanDetails.student_phone) {
+                const phoneMismatchError = 'Incorrect phone number';
+                if (!errors.phone) extraErrors.phone = phoneMismatchError;
+            }
+            return extraErrors;
+        });
+        return errors;
+    };
 
 
     const handleSubmit = async (formData) => {

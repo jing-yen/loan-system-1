@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
-import { collectFormValidationSchema } from '../../utils/validation';
+import { genericValidationSchema, collectFormSchemaDefinition } from '../../utils/validation';
 
 function NewCollectForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
@@ -25,7 +25,17 @@ function NewCollectForm({ verifiedByStaff, startVerification }) {
         { name: 'serial_numbers', label: 'Serial Numbers', type: 'textarea' },
     ];
 
-    const validationSchema = (formData) => collectFormValidationSchema(formData, formFields, isVerified);
+    const validationSchema = (formData) => {
+        const schema = collectFormSchemaDefinition;
+        let errors = genericValidationSchema(formData, formFields, schema, (formData) => {
+            let extraErrors = {};
+            if (!isVerified) {
+                extraErrors['verify'] = 'Get a staff to verify your collection';
+            }
+            return extraErrors;
+        });
+        return errors;
+    };
 
 
     const handleSubmit = async (formData) => {
