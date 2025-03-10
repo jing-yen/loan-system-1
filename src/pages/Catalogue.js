@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
 import InventoryList from '../components/InventoryList';
 import Modal from '../components/Modal';
-import { useCart } from '../components/CartContext';
-import { useWhichLocation } from '../components/LocationContext';
+import { useCart } from '../components/context/CartContext';
+import { useWhichLocation } from '../components/context/LocationContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 function Catalogue({verifiedByStaff, startVerification}) {

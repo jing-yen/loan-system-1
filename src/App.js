@@ -3,13 +3,12 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Catalogue from './pages/Catalogue';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import NewBorrowForm from './components/forms/NewBorrowForm';
-import NewCollectForm from './components/forms/NewCollectForm';
-import NewReturnForm from './components/forms/NewReturnForm';
-import { CartProvider } from './components/CartContext';
-import { LocationProvider } from './components/LocationContext';
+import BorrowForm from './components/forms/BorrowForm';
+import CollectForm from './components/forms/CollectForm';
+import ReturnForm from './components/forms/ReturnForm';
+import { CartProvider } from './components/context/CartContext';
+import { LocationProvider } from './components/context/LocationContext';
 import LoanDashboard from './pages/Dashboard';
-import OutlookBooking from './pages/Booking';
 import { useEffect, useState } from 'react';
 import VerifyPIN from './components/VerifyPIN';
 
@@ -78,9 +77,7 @@ function App() {
                   />
                 }
               />
-              <Route path="/new-borrow-form" element={<NewBorrowForm />} />
-              {/* Route for booking page, currently not used */}
-              <Route path="/booking" element={<OutlookBooking />} />
+              <Route path="/new-borrow-form" element={<BorrowForm />} />
             </Routes>
             {/* Conditionally render staff-only routes based on host environment */}
             {window.location.host !== 'edic.vercel.app' && (
@@ -88,7 +85,7 @@ function App() {
                 <Route
                   path="/new-collect-form"
                   element={
-                    <NewCollectForm
+                    <CollectForm
                       startVerification={startVerificationProcess}
                       verifiedByStaff={verifiedByStaff}
                     />
@@ -97,7 +94,7 @@ function App() {
                 <Route
                   path="/new-return-form"
                   element={
-                    <NewReturnForm
+                    <ReturnForm
                       startVerification={startVerificationProcess}
                       verifiedByStaff={verifiedByStaff}
                     />

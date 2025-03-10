@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import '../../styles/NewBorrowForm.css'; // Assuming you want to reuse the same styles
+import '../../styles/Form.css'; // Assuming you want to reuse the same styles
 
-function ReusableForm({ formTitle, itemDescription, fields, validationSchema, onSubmit, submitButtonText, extraContent, successMessage }) {
+function Form({ formTitle, itemDescription, fields, validationSchema, onSubmit, submitButtonText, extraContent, successMessage }) {
     const [formData, setFormData] = useState(() => {
         return fields.reduce((acc, field) => {
             acc[field.name] = '';
@@ -107,4 +107,4 @@ function ReusableForm({ formTitle, itemDescription, fields, validationSchema, on
     );
 }
 
-export default ReusableForm;
+export default Form;

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import '../styles/App.css';
 import SearchBar from './SearchBar';
-import { useCart } from './CartContext';
-import { useWhichLocation } from './LocationContext';
+import { useCart } from './context/CartContext';
+import { useWhichLocation } from './context/LocationContext';
 
 function InventoryItem({ item, onAddToCart }) {
     const [modalOpen, setModalOpen] = useState(false);

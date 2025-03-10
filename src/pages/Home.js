@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
 import Modal from '../components/Modal';
 import { useNavigate } from 'react-router-dom';
-import { useWhichLocation } from '../components/LocationContext';
+import { useWhichLocation } from '../components/context/LocationContext';
 
 function Home() {
   const { whichLocation, setWhichLocation } = useWhichLocation();

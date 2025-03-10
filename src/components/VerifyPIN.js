@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import '../styles/NewBorrowForm.css';
+import '../styles/Form.css';
 
 function VerifyPIN({setVerifiedByStaff, verifying, children}) {
     const [password, setPassword] = useState('');

@@ -1,12 +1,12 @@
 import React, { useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { useCart } from '../CartContext';
-import { useWhichLocation } from '../LocationContext';
-import ReusableForm from './ReusableForm';
+import { useCart } from '../context/CartContext';
+import { useWhichLocation } from '../context/LocationContext';
+import Form from './Form';
 import FormValidator from '../../utils/FormValidator';
 
-function NewBorrowForm() {
+function BorrowForm() {
     const location = useLocation();
     const { whichLocation } = useWhichLocation();
     const selectedItems = useMemo(() => location.state?.selectedItems || [], [location.state?.selectedItems]);
@@ -38,15 +38,11 @@ function NewBorrowForm() {
     ];
 
     const validationSchema = (formData) => {
-        console.log(formData);
-        let errors = FormValidator.validate(formData, formFields);
-
-        return errors;
+        return FormValidator.validate(formData, formFields);
     };
 
 
     const handleSubmit = async (formData) => {
-        console.log('hi0');
         let itemsData = selectedItems.reduce((acc, item, index) => {
             acc[`item_id_${index + 1}`] = item.item_id;
             acc[`item_name_${index + 1}`] = item.item_name;
@@ -66,7 +62,6 @@ function NewBorrowForm() {
             formDataToSend.supervisor_email = '';
         }
 
-        console.log('hi');
         await axios.post('http://localhost:5000/api/submit-form', formDataToSend);
         setCart([]);
     };
@@ -80,7 +75,7 @@ function NewBorrowForm() {
 
 
     return (
-        <ReusableForm
+        <Form
             formTitle="Items to Borrow:"
             itemDescription={itemDescription}
             fields={formFields}
@@ -93,4 +88,4 @@ function NewBorrowForm() {
     );
 }
 
-export default NewBorrowForm;
+export default BorrowForm;

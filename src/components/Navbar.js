@@ -4,7 +4,7 @@ import Logo from "../hub_logo_white.png";
 import { Link } from "react-router-dom";
 import "../styles/Navbar.css";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useCart } from "./CartContext";
+import { useCart } from "./context/CartContext";
 import Modal from "./Modal";
 
 const defaultImageUrl = `/assets/default.jpg`;

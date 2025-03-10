@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import ReusableForm from './ReusableForm';
+import Form from './Form';
 import FormValidator from '../../utils/FormValidator';
 
-function NewReturnForm({ verifiedByStaff, startVerification }) {
+function ReturnForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
     const loanDetails = useMemo(() => location.state?.loanDetails || {}, [location.state?.loanDetails]);
     const [isVerified, setIsVerified] = useState(verifiedByStaff);
@@ -63,7 +63,7 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
 
 
     return (
-        <ReusableForm
+        <Form
             formTitle="Items to Return:"
             itemDescription={itemDescription}
             fields={formFields}
@@ -76,4 +76,4 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
     );
 }
 
-export default NewReturnForm;
+export default ReturnForm;

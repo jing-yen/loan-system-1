@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import ReusableForm from './ReusableForm';
+import Form from './Form';
 import FormValidator from '../../utils/FormValidator';
 
-function NewCollectForm({ verifiedByStaff, startVerification }) {
+function CollectForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
     const loanDetails = useMemo(() => location.state?.loanDetails || {}, [location.state?.loanDetails]);
     const [isVerified, setIsVerified] = useState(verifiedByStaff);
@@ -59,7 +59,7 @@ function NewCollectForm({ verifiedByStaff, startVerification }) {
     const submitButtonText = isVerified ? "Step 2: Submit" : "Step 2: Submit (disabled)";
 
     return (
-        <ReusableForm
+        <Form
             formTitle="Items to Collect:"
             itemDescription={itemDescription}
             fields={formFields}
@@ -72,4 +72,4 @@ function NewCollectForm({ verifiedByStaff, startVerification }) {
     );
 }
 
-export default NewCollectForm;
+export default CollectForm;
