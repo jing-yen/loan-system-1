@@ -4,21 +4,21 @@ export const isRequired = (value) => {
     if (!value || value.trim() === '') {
         return 'Field cannot be blank';
     }
-    return '';
+    return undefined;
 };
 
 export const isValidEmail = (value) => {
     if (value && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value.trim())) {
         return 'Invalid email format';
     }
-    return '';
+    return undefined;
 };
 
 export const isValidPhoneNumber = (value) => {
     if (value && value.length !== 8) {
         return 'Invalid phone number';
     }
-    return '';
+    return undefined;
 };
 
 export const isNotWeekend = (dateString) => {
@@ -29,5 +29,5 @@ export const isNotWeekend = (dateString) => {
             return 'Weekend dates are not allowed';
         }
     }
-    return '';
+    return undefined;
 };
