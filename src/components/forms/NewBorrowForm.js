@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useCart } from '../CartContext';
 import { useWhichLocation } from '../LocationContext';
 import ReusableForm from './ReusableForm';
-import FormValidator from '../../utils/validation';
+import FormValidator from '../../utils/FormValidator';
 
 function NewBorrowForm() {
     const location = useLocation();

@@ -1,5 +1,3 @@
-// src/utils/validation.js
-
 class FormValidator {
     static validationRuleFunctions = {
         'required': FormValidator._isRequired,
@@ -41,11 +39,8 @@ class FormValidator {
                 try {
                     validationFn(formData[field.name]);
                 } catch (error) {
-                    if (!newErrors[field.name]) {
-                        newErrors[field.name] = error.message; // Capture only the first error for each field
-                    }
-                    // Break after capturing the first error, no need to run further rules for this field
-                    break;
+                    newErrors[field.name] = error.message;
+                    break; // Break after capturing the first error, no need to run further rules for this field
                 }
             }
         }

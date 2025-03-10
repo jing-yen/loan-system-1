@@ -84,7 +84,7 @@ function InventoryList() {
 
     useEffect(() => {
         console.log(whichLocation);
-        fetch(`/api/inventory`+ (whichLocation=='e2a' ? 'E2A' : ''))
+        fetch(`http://localhost:5000/api/inventory`+ (whichLocation=='e2a' ? 'E2A' : ''))
             .then(response => response.json())
             .then(data => {
                 const groupedItems = groupAndSumItems(data);

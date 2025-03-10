@@ -27,8 +27,6 @@ ChartJS.register(
   ArcElement
 );
 
-const API_URL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : "";
-
 const LoanDashboard = ({verifiedByStaff, startVerification}) => {
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [selectedChart, setSelectedChart] = useState('loansPerMonth');
@@ -180,21 +178,21 @@ const LoanDashboard = ({verifiedByStaff, startVerification}) => {
 
   useEffect(() => {
     // Fetch loan transactions from the API
-    fetch('/api/loan-transactions')
+    fetch('http://localhost:5000/api/loan-transactions')
       .then((response) => response.json())
       .then((data) =>
         setLoanData(data.sort((a, b) => parseInt(b['transaction_id']) - parseInt(a['transaction_id'])))
       )
       .catch((error) => console.error('Error fetching loan transactions:', error));
 
-    fetch('/api/inventory')
+    fetch('http://localhost:5000/api/inventory')
       .then((response) => response.json())
       .then((data) => 
         setInventoryData(data.sort((a, b) => parseInt(b['item_id']) - parseInt(a['item_id'])))
       )
       .catch((error) => console.error('Error fetching inventory:', error));
       
-    fetch('/api/inventoryE2A')
+    fetch('http://localhost:5000/api/inventoryE2A')
     .then((response) => response.json())
     .then((data) => 
       setInventoryDataE2A(data.sort((a, b) => parseInt(b['item_id']) - parseInt(a['item_id'])))

@@ -8,7 +8,6 @@ import { useCart } from "./CartContext";
 import Modal from "./Modal";
 
 const defaultImageUrl = `/assets/default.jpg`;
-const API_URL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : "";
 
 function Navbar() {
     const [isCartOpen, setIsCartOpen] = useState(false);
@@ -43,7 +42,7 @@ function Navbar() {
         setLoading(true);
 
         // Call the API to check loan details
-        const response = await fetch(`/api/loan-details/${loanID}`);
+        const response = await fetch(`http://localhost:5000/api/loan-details/${loanID}`);
         setLoading(false);
     
         if (response.status === 404) {

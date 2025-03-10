@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ReusableForm from './ReusableForm';
-import FormValidator from '../../utils/validation';
+import FormValidator from '../../utils/FormValidator';
 
 function NewReturnForm({ verifiedByStaff, startVerification }) {
     const location = useLocation();
