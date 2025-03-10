@@ -79,7 +79,8 @@ function App() {
                 }
               />
               <Route path="/new-borrow-form" element={<NewBorrowForm />} />
-              <Route path="/booking" element={<OutlookBooking />} /*not used*/} />
+              {/* Route for booking page, currently not used */}
+              <Route path="/booking" element={<OutlookBooking />} />
             </Routes>
             {/* Conditionally render staff-only routes based on host environment */}
             {window.location.host !== 'edic.vercel.app' && (
