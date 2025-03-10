@@ -1,200 +1,112 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import '../styles/NewBorrowForm.css';
+import React, { useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from './CartContext';
 import { useWhichLocation } from './LocationContext';
+import ReusableForm from './ReusableForm';
 
 function NewBorrowForm() {
     const location = useLocation();
     const { whichLocation } = useWhichLocation();
     const selectedItems = useMemo(() => location.state?.selectedItems || [], [location.state?.selectedItems]);
-    const [errors, setErrors] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
     const { setCart } = useCart();
-    const [requiresApproval, setRequiresApproval] = useState(false);
-    const submitButtonRef = useRef(null);
+    const requiresApproval = useMemo(() => selectedItems.some(item => item.requires_approval === 'true'), [selectedItems]);
 
-    console.log(whichLocation);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        course_code: '',
-        project_code: '',
-        phone_number: '',
-        start_usage_date: '',
-        end_usage_date: '',
-        project_supervisor_name: '',
-        supervisor_email: ''
-    });
+    const itemDescription = selectedItems.length > 0 ? (
+        <ul className="selected-items-list">
+            {selectedItems.map((item, index) => (
+                <li key={index}>{item.item_name} (Qty: {item.qty_borrowed})</li>
+            ))}
+        </ul>
+    ) : (
+        <p>No items selected.</p>
+    );
 
-    useEffect(() => {
-        const approvalRequired = selectedItems.some(item => item.requires_approval === 'true');
-        setRequiresApproval(approvalRequired);
-    }, [selectedItems]);
+    const formFields = [
+        { name: 'name', label: 'Name', type: 'text' },
+        { name: 'email', label: 'Email', type: 'email' },
+        { name: 'course_code', label: 'Course Code', type: 'text' },
+        { name: 'project_code', label: 'Project Code', type: 'text' },
+        { name: 'phone_number', label: 'Phone Number', type: 'number', minLength: 8, maxLength: 8 },
+        { name: 'start_usage_date', label: 'Start Usage Date', type: 'date' },
+        { name: 'end_usage_date', label: 'End Usage Date', type: 'date' },
+        ...(requiresApproval ? [
+            { name: 'project_supervisor_name', label: 'Project Supervisor Name', type: 'text' },
+            { name: 'supervisor_email', label: 'Supervisor Email', type: 'email' },
+        ] : [])
+    ];
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        let updatedErrors = { ...errors, [name]: '' };
-        const updatedFormData = { ...formData, [name]: value };
-
-        // Check for weekend dates
-        if (name === 'start_usage_date' || name === 'end_usage_date') {
-            const date = new Date(value);
-            const dayOfWeek = date.getDay();
-            if (dayOfWeek === 0 || dayOfWeek === 6) { // 0 = Sunday, 6 = Saturday
-                updatedErrors[name] = 'Weekend dates are not allowed';
-            }
-        }
-
-        setFormData(updatedFormData);
-        setErrors(updatedErrors);
-    };
-
-    const validateForm = () => {
-        let isValid = true;
+    const validationSchema = (formData) => {
         let newErrors = {};
-
-        // Email validation regex
         const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-        Object.keys(formData).forEach(key => {
-
-            // Skip validation for supervisor fields if approval is not required
-            if (!requiresApproval && (key === 'project_supervisor_name' || key === 'supervisor_email')) {
-                return;
+        formFields.forEach(field => {
+            if (!requiresApproval && (field.name === 'project_supervisor_name' || field.name === 'supervisor_email')) {
+                return; // Skip validation for supervisor fields if approval is not required
             }
-
-            if (!formData[key].trim() && key !== 'additional_remarks') {
-                newErrors[key] = 'Field cannot be blank';
-                isValid = false;
+            if (!formData[field.name]?.trim() && field.name !== 'additional_remarks') {
+                newErrors[field.name] = 'Field cannot be blank';
             }
-
-            if ((key === 'email' || key === 'supervisor_email') && !emailRegex.test(formData[key].trim())) {
-                newErrors[key] = 'Invalid email format';
-                isValid = false;
+            if ((field.name === 'email' || field.name === 'supervisor_email') && formData[field.name] && !emailRegex.test(formData[field.name].trim())) {
+                newErrors[field.name] = 'Invalid email format';
             }
-
-            if ((key === 'phone_number') && formData[key].length !== 8) {
-                newErrors[key] = 'Invalid phone number';
-                isValid = false;
+            if ((field.name === 'phone_number') && formData[field.name] && formData[field.name].length !== 8) {
+                newErrors[field.name] = 'Invalid phone number';
             }
-
-            if ((key === 'start_usage_date' || key === 'end_usage_date') && formData[key]) {
-                const date = new Date(formData[key]);
+            if ((field.name === 'start_usage_date' || field.name === 'end_usage_date') && formData[field.name]) {
+                const date = new Date(formData[field.name]);
                 const dayOfWeek = date.getDay();
                 if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    newErrors[key] = 'Weekend dates are not allowed';
-                    isValid = false;
+                    newErrors[field.name] = 'Weekend dates are not allowed';
                 }
             }
         });
-
-        // Log the current validation state for debugging
-        console.log("Validation Errors:", newErrors);
-        console.log("Is Form Valid:", isValid);
-
-        setErrors(newErrors);
-        return isValid;
+        return newErrors;
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (isSubmitting) return; // Prevent further execution if already submitting
-        setIsSubmitting(true); // Set early to prevent multiple submissions
+    const handleSubmit = async (formData) => {
+        let itemsData = selectedItems.reduce((acc, item, index) => {
+            acc[`item_id_${index + 1}`] = item.item_id;
+            acc[`item_name_${index + 1}`] = item.item_name;
+            acc[`quantity_${index + 1}`] = item.qty_borrowed;
+            return acc;
+        }, {});
 
-        if (validateForm()) {
-            try {
-                let itemsData = selectedItems.reduce((acc, item, index) => {
-                    acc[`item_id_${index + 1}`] = item.item_id;
-                    acc[`item_name_${index + 1}`] = item.item_name;
-                    acc[`quantity_${index + 1}`] = item.qty_borrowed;
-                    return acc;
-                }, {});
+        const formDataToSend = {
+            ...formData,
+            ...itemsData,
+            location: whichLocation || 'hub',
+            completion_time: new Date().toISOString()
+        };
 
-                const formDataToSend = {
-                    ...formData,
-                    ...itemsData,
-                    location: whichLocation || 'hub',
-                    completion_time: new Date().toISOString()
-                };
-
-                // Conditionally include supervisor info
-                if (!requiresApproval) {
-                    formDataToSend.project_supervisor_name = '';
-                    formDataToSend.supervisor_email = '';
-                }
-                console.log(formDataToSend);
-
-                await axios.post('/api/submit-form', formDataToSend);
-                setIsSubmitted(true); // Set this on successful submission
-                setCart([]);
-            } catch (error) {
-                console.error('Error submitting form:', error);
-                setIsSubmitting(false); // Reset on error as well
-            } finally {
-                setIsSubmitting(false); // Always reset submitting state after the operation
-            }
-        } else {
-            setIsSubmitting(false); // Reset if validation fails
+        if (!requiresApproval) {
+            formDataToSend.project_supervisor_name = '';
+            formDataToSend.supervisor_email = '';
         }
+
+        await axios.post('/api/submit-form', formDataToSend);
+        setCart([]);
     };
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+    const extraContent = (
+        <>
+            <p style={{ fontSize: '12px', color: '#666', width: '100%' }}>We collect your personal data to contact you regarding your loan transaction. Your data may be disclosed to third parties solely for this purpose.</p>
+            <p style={{ fontSize: '12px', color: '#666', width: '100%' }}>By submitting this form, you consent to the collection, use, and disclosure of your data as described above. Please review your information for accuracy before clicking "Submit."</p>
+        </>
+    );
 
-    if (isSubmitting) {
-        return <div className="loading-message">Submitting...</div>;
-    }
-    else if (isSubmitted) {
-        return <div className="submission-success">Form submitted successfully!</div>;
-    }
 
     return (
-        <div className="form-container">
-            <h3 className="form-heading">Items to Borrow:</h3>
-            <div className="selected-items">
-                {selectedItems.length > 0 ? (
-                    <ul className="selected-items-list">
-                        {selectedItems.map((item, index) => (
-                            <li key={index}>{item.item_name} (Qty: {item.qty_borrowed})</li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No items selected.</p>
-                )}
-            </div>
-
-            <form onSubmit={handleSubmit}>
-                {Object.keys(formData).map((key, index) => {
-                    // Conditionally hide supervisor fields if not required
-                    if (!requiresApproval && (key === 'project_supervisor_name' || key === 'supervisor_email')) {
-                        return null; // Do not render these fields
-                    }
-
-                    return (
-                        <div className="form-group" key={index}>
-                            <label>{key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}:</label>
-                            <input
-                                type={key === 'phone_number' ? 'number' : key === 'email' ? 'email' : (key.includes('date') ? 'date' : 'text')}
-                                name={key}
-                                value={formData[key]}
-                                onChange={handleChange}
-                                className={errors[key] ? 'input-error' : ''}
-                            />
-                            {errors[key] && <p className="form-error">{errors[key]}</p>}
-                        </div>
-                    );
-                })}
-                <p style={{fontSize:'12px', color:'#666', width:'100%'}}>We collect your personal data to contact you regarding your loan transaction. Your data may be disclosed to third parties solely for this purpose.</p>
-                
-                <p style={{fontSize:'12px', color:'#666', width:'100%'}}>By submitting this form, you consent to the collection, use, and disclosure of your data as described above. Please review your information for accuracy before clicking "Submit."</p>
-
-                <button type="submit" disabled={isSubmitting} className="submit-button">Submit</button>
-            </form>
-        </div>
+        <ReusableForm
+            formTitle="Items to Borrow:"
+            itemDescription={itemDescription}
+            fields={formFields}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+            submitButtonText="Submit"
+            extraContent={extraContent}
+            successMessage="Form submitted successfully!"
+        />
     );
 }
 
