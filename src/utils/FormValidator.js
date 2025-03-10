@@ -52,52 +52,24 @@ class FormValidator {
         return newErrors;
     }
 
-    /**
-     * Private validation function for required fields.
-     * Checks if a value is not null, undefined, or an empty string after trimming whitespace.
-     * @param {*} value The value to validate.
-     * @throws {Error} If the value is null, undefined, or an empty string.
-     * @private
-     */
     static _isRequired(value) {
         if (!value || value.trim() === '') {
             throw new Error('Field cannot be blank');
         }
     }
 
-    /**
-     * Private validation function for email format.
-     * Uses a regular expression to check if the value is a valid email format.
-     * @param {string} value The value to validate.
-     * @throws {Error} If the value is not a valid email format.
-     * @private
-     */
     static _isValidEmail(value) {
         if (value && !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value.trim())) {
             throw new Error('Invalid email format');
         }
     }
 
-    /**
-     * Private validation function for phone number format (8 digits).
-     * Checks if the value is exactly 8 digits long.
-     * @param {string} value The value to validate.
-     * @throws {Error} If the value is not exactly 8 digits long.
-     * @private
-     */
     static _isValidPhoneNumber(value) {
         if (value && value.length !== 8) {
             throw new Error('Invalid phone number');
         }
     }
 
-    /**
-     * Private validation function to check for weekend dates.
-     * Validates that the date string does not fall on a Saturday or Sunday.
-     * @param {string} dateString The date string to validate.
-     * @throws {Error} If the date falls on a weekend.
-     * @private
-     */
     static _isNotWeekend(dateString) {
         if (dateString) {
             const date = new Date(dateString);
