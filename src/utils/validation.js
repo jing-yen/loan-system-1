@@ -10,8 +10,8 @@ class FormValidator {
         phone_number: { type: 'tel', rules: ['required', 'phoneNumber'] },
         start_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
         end_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
-        project_supervisor_name: { type: 'text', rules: [] }, // only checked when approval is required
-        supervisor_email: { type: 'email', rules: [] }, // only checked when approval is required
+        project_supervisor_name: { type: 'text', rules: ['required'] }, // only checked when approval is required
+        supervisor_email: { type: 'email', rules: ['required'] }, // only checked when approval is required
 
         // Collect Form Schema
         date: { type: 'date', rules: ['required', 'notWeekend'] },
