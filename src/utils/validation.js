@@ -3,31 +3,23 @@
 class FormValidator {
     static schemaDefinitions = {
         // Borrow Form Schema
-        borrowForm: {
-            name: { type: 'text', rules: ['required'] },
-            email: { type: 'email', rules: ['required', 'emailFormat'] },
-            course_code: { type: 'text', rules: ['required'] },
-            project_code: { type: 'text', rules: ['required'] },
-            phone_number: { type: 'tel', rules: ['required', 'phoneNumber'] },
-            start_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
-            end_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
-            project_supervisor_name: { type: 'text', rules: ['required'] }, // only checked when approval is required
-            supervisor_email: { type: 'email', rules: ['required'] }, // only checked when approval is required
-        },
+        name: { type: 'text', rules: ['required'] },
+        email: { type: 'email', rules: ['required', 'emailFormat'] },
+        course_code: { type: 'text', rules: ['required'] },
+        project_code: { type: 'text', rules: ['required'] },
+        phone_number: { type: 'tel', rules: ['required', 'phoneNumber'] },
+        start_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
+        end_usage_date: { type: 'date', rules: ['required', 'notWeekend'] },
+        project_supervisor_name: { type: 'text', rules: [] }, // only checked when approval is required
+        supervisor_email: { type: 'email', rules: [] }, // only checked when approval is required
 
         // Collect Form Schema
-        collectForm: {
-            date: { type: 'date', rules: ['required', 'notWeekend'] },
-            staff_name: { type: 'text', rules: ['required'] },
-            serial_numbers: { type: 'textarea', rules: [] }, // not required
-        },
+        date: { type: 'date', rules: ['required', 'notWeekend'] },
+        staff_name: { type: 'text', rules: ['required'] },
+        serial_numbers: { type: 'textarea', rules: [] }, // not required
 
         // Return Form Schema
-        returnForm: {
-            date: { type: 'date', rules: ['required', 'notWeekend'] },
-            staff_name: { type: 'text', rules: ['required'] },
-            phone: { type: 'tel', rules: ['required', 'phoneNumber'] },
-        },
+        phone: { type: 'tel', rules: ['required', 'phoneNumber'] }, // sharing with borrowForm, but specific to returnForm in context
     };
 
     static validationRuleFunctions = {
@@ -37,12 +29,12 @@ class FormValidator {
         'notWeekend': FormValidator._isNotWeekend,
     };
 
-    static validate(formData, fields, formName, extraValidation) {
+    static validate(formData, fields, formName, extraValidation) { // formName is not used to access schema anymore
         let newErrors = {};
-        const schemaDefinition = FormValidator.schemaDefinitions[formName];
+        // const schemaDefinition = FormValidator.schemaDefinitions[formName]; // formName not used
 
         fields.forEach(field => {
-            const fieldSchema = schemaDefinition[field.name];
+            const fieldSchema = FormValidator.schemaDefinitions[field.name]; // directly use field.name to access schema
             if (fieldSchema && fieldSchema.rules) {
                 fieldSchema.rules.forEach(ruleName => {
                     const validationFn = FormValidator.validationRuleFunctions[ruleName];
