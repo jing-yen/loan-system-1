@@ -64,6 +64,7 @@ function NewBorrowForm() {
     };
 
     const handleSubmit = async (formData) => {
+        console.log('hi0');
         let itemsData = selectedItems.reduce((acc, item, index) => {
             acc[`item_id_${index + 1}`] = item.item_id;
             acc[`item_name_${index + 1}`] = item.item_name;
@@ -83,7 +84,8 @@ function NewBorrowForm() {
             formDataToSend.supervisor_email = '';
         }
 
-        await axios.post('/api/submit-form', formDataToSend);
+        console.log('hi');
+        await axios.post('http://localhost:5000/api/submit-form', formDataToSend);
         setCart([]);
     };
 

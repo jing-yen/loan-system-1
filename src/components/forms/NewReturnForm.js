@@ -58,7 +58,7 @@ function NewReturnForm({ verifiedByStaff, startVerification }) {
             loan_id: loanDetails.transaction_id,
             completion_time: new Date().toISOString()
         };
-        await axios.post('/api/loan-status/update', formDataToSend);
+        await axios.post('http://localhost:5000/api/loan-status/update', formDataToSend);
     };
 
 
