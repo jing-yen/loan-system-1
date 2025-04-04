@@ -63,7 +63,7 @@ function InventoryList() {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const { cart, setCart } = useCart();
 
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const API_URL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : "";
 
 
     // Create a function to group items with the same name and brand and add their quantities
@@ -84,7 +84,7 @@ function InventoryList() {
 
     useEffect(() => {
         console.log(whichLocation);
-        fetch(`${API_URL}/api/inventory`+ (whichLocation=='e2a' ? 'E2A' : ''))
+        fetch(`/api/inventory`+ (whichLocation=='e2a' ? 'E2A' : ''))
             .then(response => response.json())
             .then(data => {
                 const groupedItems = groupAndSumItems(data);

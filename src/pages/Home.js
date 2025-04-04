@@ -4,6 +4,8 @@ import Modal from '../components/Modal';
 import { useNavigate } from 'react-router-dom';
 import { useWhichLocation } from '../components/LocationContext';
 
+const API_URL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : "";
+
 function Home() {
   const { whichLocation, setWhichLocation } = useWhichLocation();
 
@@ -35,7 +37,7 @@ function Home() {
       setLoading(true);
 
       // Call the API to check loan details
-      const response = await fetch(`https://express-server-1.fly.dev/api/loan-details/${loanID}`);
+      const response = await fetch(`/api/loan-details/${loanID}`);
       setLoading(false);
   
       if (response.status === 404) {
