@@ -1,6 +1,6 @@
 import './styles/App.css';
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
+import HomeView from './pages/Home';
 import Catalogue from './pages/Catalogue';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import NewBorrowForm from './components/NewBorrowForm';
@@ -46,7 +46,7 @@ function App() {
           <Navbar />
           <VerifyPIN setVerifiedByStaff={handleVerificationResponse} verifying={verifying}>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<HomeView />} />
               <Route path="/catalogue" element={<Catalogue startVerification={startVerificationProcess} verifiedByStaff={verifiedByStaff}/>} />
               <Route path="/new-borrow-form" element={<NewBorrowForm />} />
               <Route path="/booking" element={<OutlookBooking /> /*not used*/} />
