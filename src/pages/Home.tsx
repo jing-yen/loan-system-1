@@ -1,4 +1,3 @@
-// src/views/HomeView.tsx (or src/Home.tsx)
 import React from 'react';
 import '../styles/App.css';
 import Modal from '../components/Modal';
@@ -14,15 +13,12 @@ function HomeView(): JSX.Element {
 
     return (
         <div className="content-area">
+
             {/* --- Modal --- */}
-            {/* Use state and actions from the viewModel object */}
             <Modal isOpen={state.isModalOpen} onClose={actions.closeModal}>
                 <h2>{derivedState.modalTitle}</h2>
-                {/* Use the specific form submit handler from actions */}
                 <form onSubmit={actions.handleModalFormSubmit}>
-                    {state.errorMessage ? (
-                        <p className="error-message">{state.errorMessage}</p>
-                    ) : (
+                    {state.errorMessage ? (<p className="error-message">{state.errorMessage}</p>) : (
                         <>
                             <p>Enter the Loan ID from your email.</p>
                             <input
@@ -37,23 +33,15 @@ function HomeView(): JSX.Element {
                             />
                         </>
                     )}
-                    <button
-                        type="submit"
-                        // Use the derived disabled state from the view model
-                        disabled={derivedState.isSubmitDisabled}
-                        style={{ width: '100%' }}
-                    >
-                        {/* Logic remains similar, using state values */}
+                    <button type="submit" disabled={derivedState.isSubmitDisabled} style={{ width: '100%' }}>
                         {state.isLoading ? <div className="loader"></div> : state.errorMessage ? 'OK' : 'Submit'}
                     </button>
                 </form>
             </Modal>
 
             {/* --- Main Content --- */}
-            <img
-                className='cover-image'
-                // Use derivedState for location-based rendering
-                src={derivedState.isE2aLocation ? "/EDIC2.jpg" : "/hub.jpg"}
+            <img className='cover-image'
+                src={derivedState.isE2aLocation ? "/e2a.jpg" : "/hub.jpg"}
                 alt={derivedState.isE2aLocation ? "Electronics Workshop EDIC" : "Innovation Design Hub"}
             />
 
@@ -74,9 +62,9 @@ function HomeView(): JSX.Element {
                         className={!derivedState.isE2aLocation ? 'other-location' : ''}
                         onClick={!derivedState.isE2aLocation ? actions.changeLocation : undefined}
                         style={{ cursor: !derivedState.isE2aLocation ? 'pointer' : 'default' }}
-                         role="button"
-                         tabIndex={!derivedState.isE2aLocation ? 0 : -1}
-                         onKeyDown={!derivedState.isE2aLocation ? (e) => e.key === 'Enter' && actions.changeLocation() : undefined}
+                        role="button"
+                        tabIndex={!derivedState.isE2aLocation ? 0 : -1}
+                        onKeyDown={!derivedState.isE2aLocation ? (e) => e.key === 'Enter' && actions.changeLocation() : undefined}
                     >
                          📍 Electronics Workshop
                     </span>
@@ -84,26 +72,21 @@ function HomeView(): JSX.Element {
                 <p>{derivedState.isE2aLocation ? 'E2A Laboratory' : 'Innovation & Design Hub, or The Hub in short,'} is a space to create, tinker and pursue exciting ideas to spur innovation.</p>
             </div>
 
+            {/* --- Buttons --- */}
             <div className='home-button-row'>
-                {/* Use derivedState and actions */}
                 {!derivedState.isE2aLocation && <button className='home-button' onClick={actions.openConsultationBooking}>📅 Book a Consultation</button>}
                 {!derivedState.isE2aLocation && <button className='home-button' onClick={actions.openJobRequest}>👷‍♂️ Job Request</button>}
-            </div>
-            <br />
-
+            </div><br />
             <fieldset className='home-button-fieldset'>
                 <legend>Loan System</legend>
-                {/* Use actions */}
                 <button className='home-button' onClick={actions.navigateToCatalogue}>🛒 Look at the Catalogue</button>
-                {/* Use derivedState and actions */}
                 {derivedState.showHostSpecificButtons && (
                     <>
                         <button className='home-button' onClick={actions.openCollectModal}>📦 Collect</button>
                         <button className='home-button' onClick={actions.openReturnModal}>↩️ Return</button>
                     </>
                 )}
-            </fieldset>
-            <br />
+            </fieldset><br />
 
             <footer>
                 <p style={{ textAlign: 'center', fontSize: '12px', color: '#666' }}>

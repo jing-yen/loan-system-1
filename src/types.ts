@@ -6,7 +6,10 @@ export interface LoanDetails {
     // e.g., borrowerName?: string; items?: { name: string }[]; dueDate?: string;
 }
 
-export type LocationType = 'e2a' | 'hub';
+export enum LocationType {
+    E2A = 'e2a',
+    HUB = 'hub',
+}
 
 export type ActionType = 'collect' | 'return';
 

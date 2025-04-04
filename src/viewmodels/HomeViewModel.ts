@@ -3,9 +3,8 @@ import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWhichLocation } from '../components/LocationContext';
 import { LoanService } from '../services/LoanService';
-import { ActionType, LoanDetails, LocationType, IHomeViewModel } from '../types'; // Import IHomeViewModel
+import { ActionType, LocationType, IHomeViewModel } from '../types'; // Import IHomeViewModel
 
-// Explicitly type the return value of the hook
 export function useHomeViewModel(): IHomeViewModel {
     // --- Hooks ---
     const navigate = useNavigate();
@@ -109,7 +108,7 @@ export function useHomeViewModel(): IHomeViewModel {
     }, [submitLoanAction]); // Dependency: submitLoanAction
 
     const changeLocation = useCallback(() => {
-        const newLocation: LocationType = whichLocation === 'e2a' ? 'hub' : 'e2a';
+        const newLocation: LocationType = whichLocation === LocationType.E2A ? LocationType.HUB : LocationType.E2A;
         setWhichLocation(newLocation);
     }, [whichLocation, setWhichLocation]);
 
