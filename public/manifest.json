@@ -1,0 +1,32 @@
+{
+    "short_name": "Hub App",
+    "name": "Book Equipment, Makers and Spaces",
+    "icons": [
+      {
+        "src": "/hub_logo_white.png",
+        "type": "image/png",
+        "sizes": "585x585"
+      }
+    ],
+    "id": "/?source=pwa",
+    "start_url": "/?source=pwa",
+    "background_color": "#FFF",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#FFF",
+    "description": "Weather forecast information",
+    "screenshots": [
+      {
+        "src": "/phone_screenshot.png",
+        "type": "image/png",
+        "sizes": "1290x2795",
+        "form_factor": "narrow"
+      },
+      {
+        "src": "/desktop_screenshot.png",
+        "type": "image/png",
+        "sizes": "1920x1080",
+        "form_factor": "wide"
+      }
+    ]
+  }

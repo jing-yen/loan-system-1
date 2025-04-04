@@ -1,34 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/App.css';
-import InventoryList from '../components/InventoryList';
-import { useNavigate, useLocation } from 'react-router-dom';
+import Modal from '../components/Modal';
+import { useNavigate } from 'react-router-dom';
+import { useWhichLocation } from '../components/LocationContext';
 
-function Home({ cart, setCart }) {
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [showTopBtn, setShowTopBtn] = useState(false);
+function Home() {
+  const { whichLocation, setWhichLocation } = useWhichLocation();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loanID, setLoanID] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [actionType, setActionType] = useState(null);
+
   let navigate = useNavigate();
-  
+
   const toggleCollections = () => {
-    var loanID = prompt("📦 Collections: Enter Loan ID:");
-    handleCollectionsOrReturns('collect', loanID);
+      setActionType('collect');
+      setIsModalOpen(true);
+      setError('');
+      setLoanID('');
   };
 
   const toggleReturns = () => {
-    var loanID = prompt("↩️ Returns: Enter Loan ID:");
-    handleCollectionsOrReturns('collect', loanID);
+      setActionType('return');
+      setIsModalOpen(true);
+      setError('');
+      setLoanID('');
   };
-  
 
   const handleCollectionsOrReturns = async (action, loanID) => {
-    try {
+      try {
+      // Set loading state to true
+      setLoading(true);
+
       // Call the API to check loan details
       const response = await fetch(`https://express-server-1.fly.dev/api/loan-details/${loanID}`);
+      setLoading(false);
   
       if (response.status === 404) {
-        // Loan not found, handle the error (e.g., display a message)
-        alert('Loan not found');
-        // You might want to display an error message to the user here
-        return; // Stop further execution
+          // Loan not found, handle the error (e.g., display a message)
+          setError('Loan not found');
+          // You might want to display an error message to the user here
+          return; // Stop further execution
       }
 
       // Parse the response as JSON
@@ -39,82 +53,80 @@ function Home({ cart, setCart }) {
 
       // If the loan items are already collected
       if (action == 'collect' && loanDetails.status != 'Reserved') {
-        alert('Loan items are already collected');
-        return; // Stop further execution
+          setError('Loan items are already collected.');
+          return; // Stop further execution
       }
 
       // If the loan items are already returned, or not collected yet
       if (action == 'return' && loanDetails.status != 'Borrowed') {
-        alert('Loan items are already returned, or not collected yet');
-        return; // Stop further execution
-    }
+          setError('Loan items are already returned / not collected yet.');
+          return; // Stop further execution
+      }
   
       // If the API call is successful (status code is not 404)
       navigate(action=='collect' ? '/new-collect-form': '/new-return-form', { state: { loanDetails: loanDetails } });
+      setIsModalOpen(false);
   
-    } catch (error) {
+      } catch (error) {
       // Handle any errors that occur during the API call
       console.error('Error checking loan details:', error);
       // You might want to display a generic error message to the user here
-    }
-};
-
-  const handleCategoryChange = (category) => {
-    if (Array.isArray(category) && category.length === 0) {
-      setSelectedCategories([]);
-    } else if (selectedCategories.includes(category)) {
-      setSelectedCategories(selectedCategories.filter(cat => cat !== category));
-    } else {
-      setSelectedCategories([...selectedCategories, category]);
-    }
-  };
-
-  useEffect(() => {
-    const toggleVisibility = () => {
-      if (window.scrollY > 200) { // Adjust as needed
-        setShowTopBtn(true);
-      } else {
-        setShowTopBtn(false);
       }
-    };
-
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth', // For smooth scrolling
-    });
   };
+
+  const changeLocation = () => {
+    setWhichLocation(whichLocation === 'e2a' ? 'hub' : 'e2a');
+  }
+
+  const isE2a = () => {
+    return whichLocation === 'e2a';
+  }
 
   return (
-    <div className="content-area">
-      <div className="action-container">
-      <div
-            className='action-item' onClick={toggleCollections} style={{backgroundColor: '#ffddb0'}}
-            >
-            <h1>📦</h1>
-            <h3>Collections</h3>
-            </div>
-            
-      <div
-            className='action-item' onClick={toggleReturns} style={{backgroundColor: '#65a5f7'}}
-            >
-            <h1>↩️</h1>
-            <h3>Returns</h3>
-      </div>
-      </div>
+    <div className="content-area">     
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <h2>{actionType === 'collect' ? '📦 Collections' : '↩️ Returns'}</h2>
+          <form>
+              {error ? <p className="error-message">{error}</p>:
+                  <><p>Enter the Loan ID from your email.</p>
+                  <input autoFocus
+                      type="text"
+                      value={loanID}
+                      placeholder="Enter Loan ID"
+                      onChange={(e) => setLoanID(e.target.value)}
+                      disabled={loading}
+                      style={{margin:0, width:'100%'}}
+                      /></>}
+              <button onClick={()=>{error ? setIsModalOpen(false) : handleCollectionsOrReturns(actionType, loanID)}} disabled={loading} style={{width:'100%'}}>
+                  {loading ? <div class="loader"></div> : error ? 'OK' : 'Submit'}
+              </button>
+          </form>
+      </Modal>   
+      <img className='cover-image' src={isE2a()?"/EDIC2.jpg": "/hub.jpg"}></img>
+
       <div className="welcome-message">
-        <h1>Welcome to the Hub’s Tool Catalogue</h1>
-        <p>Feel free to browse through the items we have for loan in the Innovation & Design Hub, and choose any items you require.</p>
+        <h1><span className={isE2a()?'other-location':''} onClick={()=>isE2a()&&changeLocation()}>📍 The Hub</span><span className={isE2a()?'':'other-location'} onClick={()=>!isE2a()&&changeLocation()}> / 📍 Electronics Workshop</span></h1>
+        <p>{isE2a()?'E2A Laboratory':'Innovation & Design Hub, or The Hub in short,'} is a space to create, tinker and pursue exciting ideas to spur innovation.</p>
       </div>
-      <InventoryList
-        cart={cart}
-        setCart={setCart}
-        selectedCategories={selectedCategories} />
-      {showTopBtn && <button className="scrollToTop-btn" onClick={scrollToTop}>Back to Top</button>}
+      <div className='home-button-row'>
+        {!isE2a() && <button className='home-button' onClick={()=>window.open("https://outlook.office365.com/book/InnovationDesignHubMediaRoom@nusu.onmicrosoft.com")}>📅 Book a Consultation</button>}
+        {!isE2a() && <button className='home-button' onClick={()=>window.open("https://forms.office.com/r/T7x6UZRvqY")}>👷‍♂️ Job Request</button>}
+      </div>
+      <br/>
+      <fieldset className='home-button-fieldset'>
+        <legend>  Loan System  </legend>
+        <button className='home-button' onClick={()=>navigate('/catalogue')}>🛒 Look at the Catalogue</button>
+        {window.location.host != 'edic.vercel.app' /*only on edic-vercel.app*/ && 
+          <>
+          <button className='home-button'onClick={toggleCollections}>📦 Collect</button>
+          <button className='home-button' onClick={toggleReturns}>↩️ Return</button>
+          </>
+        }
+      </fieldset>
+      <br/>
+      <footer>
+        <p style={{textAlign:'center', fontSize:'12px', color:'#666'}}>© 2025 EDIC. To access/update/delete your personal data, <a href="mailto:cdebox51@nus.edu.sg">email us here</a>.</p>
+      </footer>
     </div>
   );
 }

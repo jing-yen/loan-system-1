@@ -3,17 +3,16 @@ import '../styles/NewBorrowForm.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-function NewReturnForm() {
+function NewReturnForm({verifiedByStaff, startVerification}) {
     const location = useLocation();
     const loanDetails = useMemo(() => location.state?.loanDetails || {});
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
-
     const [formData, setFormData] = useState({
-        phone: '',
-        collection_date: '',
+        date: new Date().toISOString().split('T')[0],
+        staff_name: '',
     });
 
     const handleChange = (e) => {
@@ -42,6 +41,11 @@ function NewReturnForm() {
         let isValid = true;
         let newErrors = {};
 
+        if (!verifiedByStaff) {
+            newErrors['verify'] = 'Get a staff to verify your collection';
+            isValid = false;
+        }
+
         Object.keys(formData).forEach(key => {
             if ((key === 'phone') && formData[key].trim() != loanDetails.student_phone) {
                 newErrors[key] = 'Incorrect phone number';
@@ -53,7 +57,7 @@ function NewReturnForm() {
                 isValid = false;
             }
 
-            if ((key === 'collection_date') && formData[key]) {
+            if ((key === 'date') && formData[key]) {
                 const date = new Date(formData[key]);
                 const dayOfWeek = date.getDay();
                 if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -80,7 +84,7 @@ function NewReturnForm() {
             try {
                 const formDataToSend = {
                     ...formData,
-                    status: 'Returned',
+                    status: 'Completed',
                     loan_id: loanDetails.transaction_id,
                     completion_time: new Date().toISOString()
                 };
@@ -99,16 +103,10 @@ function NewReturnForm() {
         }
     };
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+    useEffect(() => window.scrollTo(0, 0), []);
 
-    if (isSubmitting) {
-        return <div className="loading-message">Submitting...</div>;
-    }
-    else if (isSubmitted) {
-        return <div className="submission-success">Form submitted successfully!</div>;
-    }
+    if (isSubmitting) return <div className="loading-message">Submitting...</div>;
+    else if (isSubmitted) return <div className="submission-success">Form submitted successfully!</div>;
 
     return (
         <div className="form-container">
@@ -129,7 +127,7 @@ function NewReturnForm() {
 
             <hr/>
             <form onSubmit={handleSubmit}>
-                {Object.keys(formData).map((key, index) => {
+                {Object.keys(formData).slice(0,-1).map((key, index) => {
 
                     return (
                         <div className="form-group" key={index}>
@@ -147,7 +145,23 @@ function NewReturnForm() {
                         </div>
                     );
                 })}
-                <button type="submit" disabled={isSubmitting} className="submit-button">Submit</button>
+                <hr/><br/>
+                
+                <div className="form-group">
+                    <label>Updated by:</label>
+                    <input
+                        type={'text'}
+                        name={'staff_name'}
+                        value={formData['staff_name']}
+                        onChange={handleChange}
+                        className={errors['staff_name'] ? 'input-error' : ''}
+                    />
+                    {errors['staff_name'] && <p className="form-error">{errors['staff_name']}</p>}
+                </div>
+
+                <button type="button" onClick={startVerification} disabled={verifiedByStaff} className="submit-button">Step 1: {verifiedByStaff?'Verified':'Get A Staff to Verify'}</button>
+                {errors['verify'] && <p className="form-error">{errors['verify']}</p>}
+                <button type="submit" disabled={isSubmitting||!verifiedByStaff} className="submit-button">Step 2: Submit</button>
             </form>
         </div>
     );

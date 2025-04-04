@@ -1,13 +1,12 @@
 .search-bar {
     display: flex;
-    width: 862px;
+    width: 90%;
     height: 20px;
     padding: 12px 24px;
     align-items: center;
     gap: 10px;
     border-radius: 48px;
     background: rgba(0, 0, 0, 0.10);
-    margin-top: -105px;
     margin-bottom: 70px;
 }
 

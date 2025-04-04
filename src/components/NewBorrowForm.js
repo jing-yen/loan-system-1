@@ -3,9 +3,11 @@ import '../styles/NewBorrowForm.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from './CartContext';
+import { useWhichLocation } from './LocationContext';
 
 function NewBorrowForm() {
     const location = useLocation();
+    const { whichLocation } = useWhichLocation();
     const selectedItems = useMemo(() => location.state?.selectedItems || [], [location.state?.selectedItems]);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,7 +16,7 @@ function NewBorrowForm() {
     const [requiresApproval, setRequiresApproval] = useState(false);
     const submitButtonRef = useRef(null);
 
-
+    console.log(whichLocation);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -74,6 +76,11 @@ function NewBorrowForm() {
                 isValid = false;
             }
 
+            if ((key === 'phone_number') && formData[key].length !== 8) {
+                newErrors[key] = 'Invalid phone number';
+                isValid = false;
+            }
+
             if ((key === 'start_usage_date' || key === 'end_usage_date') && formData[key]) {
                 const date = new Date(formData[key]);
                 const dayOfWeek = date.getDay();
@@ -109,6 +116,7 @@ function NewBorrowForm() {
                 const formDataToSend = {
                     ...formData,
                     ...itemsData,
+                    location: whichLocation || 'hub',
                     completion_time: new Date().toISOString()
                 };
 
@@ -117,6 +125,7 @@ function NewBorrowForm() {
                     formDataToSend.project_supervisor_name = '';
                     formDataToSend.supervisor_email = '';
                 }
+                console.log(formDataToSend);
 
                 await axios.post('https://express-server-1.fly.dev/api/submit-form', formDataToSend);
                 setIsSubmitted(true); // Set this on successful submission
@@ -169,7 +178,7 @@ function NewBorrowForm() {
                         <div className="form-group" key={index}>
                             <label>{key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}:</label>
                             <input
-                                type={key === 'email' ? 'email' : (key.includes('date') ? 'date' : 'text')}
+                                type={key === 'phone_number' ? 'number' : key === 'email' ? 'email' : (key.includes('date') ? 'date' : 'text')}
                                 name={key}
                                 value={formData[key]}
                                 onChange={handleChange}
@@ -179,6 +188,10 @@ function NewBorrowForm() {
                         </div>
                     );
                 })}
+                <p style={{fontSize:'12px', color:'#666', width:'100%'}}>We collect your personal data to contact you regarding your loan transaction. Your data may be disclosed to third parties solely for this purpose.</p>
+                
+                <p style={{fontSize:'12px', color:'#666', width:'100%'}}>By submitting this form, you consent to the collection, use, and disclosure of your data as described above. Please review your information for accuracy before clicking "Submit."</p>
+
                 <button type="submit" disabled={isSubmitting} className="submit-button">Submit</button>
             </form>
         </div>
