@@ -2,8 +2,6 @@
 export interface LoanDetails {
     id: string; // Assuming Loan ID is a string
     status: 'Reserved' | 'Borrowed' | 'Returned' | string; // Add other possible statuses
-    // Add other relevant properties from your actual API response
-    // e.g., borrowerName?: string; items?: { name: string }[]; dueDate?: string;
 }
 
 export enum LocationType {
@@ -12,6 +10,24 @@ export enum LocationType {
 }
 
 export type ActionType = 'collect' | 'return';
+
+export enum LoanActionStatus {
+    IDLE,
+    LOADING,
+    SUCCESS, // Usually brief before modal closes/navigates
+    ERROR_NOT_FOUND,
+    ERROR_INVALID_STATUS,
+    ERROR_API,
+}
+
+// Define a type for cart items (adjust properties as needed)
+export interface CartItem {
+    id: string | number; // Or whatever identifies the item uniquely
+    item_name: string;
+    qty_borrowed: number;
+    imageUrl?: string;
+    // Add other properties returned by your API or needed by the cart
+}
 
 export interface IHomeViewModel {
     // State properties directly exposed
