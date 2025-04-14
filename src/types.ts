@@ -22,40 +22,27 @@ export enum LoanActionStatus {
 
 // Define a type for cart items (adjust properties as needed)
 export interface CartItem {
-    id: string | number; // Or whatever identifies the item uniquely
+    id: number;
     item_name: string;
+    item_id: number;
+    brand: string;
+    model?: string | null;
+    size_specs?: string | null;
+    requires_approval?: string | boolean; // Consider using boolean if possible
     qty_borrowed: number;
     imageUrl?: string;
     // Add other properties returned by your API or needed by the cart
 }
 
-export interface IHomeViewModel {
-    // State properties directly exposed
-    state: {
-        isModalOpen: boolean;
-        loanID: string;
-        isLoading: boolean;
-        errorMessage: string;
-        whichLocation: LocationType; // Expose original location if needed by View logic
-    };
-    // Derived or computed state properties
-    derivedState: {
-        isE2aLocation: boolean;
-        modalTitle: string;
-        showHostSpecificButtons: boolean;
-        isSubmitDisabled: boolean; // Add derived state for button disabled logic
-    };
-    // Actions (functions) the View can call
-    actions: {
-        openCollectModal: () => void;
-        openReturnModal: () => void;
-        closeModal: () => void;
-        handleLoanIdChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-        submitLoanAction: () => Promise<void>; // Mark as async if needed for clarity
-        handleModalFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void; // Add form submit handler
-        changeLocation: () => void;
-        navigateToCatalogue: () => void;
-        openConsultationBooking: () => void;
-        openJobRequest: () => void;
-    };
+// Interface for inventory item data (as fetched or after grouping)
+export interface InventoryItemData {
+    item_id: number; // Unique ID (e.g., from database)
+    item_name: string;
+    brand: string;
+    model?: string | null;
+    size_specs?: string | null;
+    category?: string | null;
+    requires_approval?: string | boolean;
+    qty_available: number; // Should be a number after grouping
+    // Add any other properties coming from your API
 }

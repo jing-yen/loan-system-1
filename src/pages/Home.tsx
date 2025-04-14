@@ -1,10 +1,9 @@
 import React from 'react';
 import '../styles/App.css';
 import Modal from '../components/Modal';
-import { useHomeViewModel } from '../viewmodels/HomeViewModel';
-import { IHomeViewModel } from '../types';
+import { IHomeViewModel, useHomeViewModel } from '../viewmodels/HomeViewModel';
 
-function HomeView(): JSX.Element {
+const HomeView: React.FC<{}> = () => {
     // Get the entire ViewModel object
     const viewModel: IHomeViewModel = useHomeViewModel();
 

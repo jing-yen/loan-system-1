@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Modal from './Modal';
-import '../styles/App.css';
-import SearchBar from './SearchBar';
+import SearchBar from './SearchBar'; 
 import { useCart } from './CartContext';
 import { useWhichLocation } from './LocationContext';
+import { InventoryItemData } from '../types';
+import '../styles/App.css';
+import { LoanService } from '../services/LoanService';
 
-function InventoryItem({ item, onAddToCart }) {
-    const [modalOpen, setModalOpen] = useState(false);
+interface InventoryItemProps {
+    item: InventoryItemData;
+    onAddToCart: (item: InventoryItemData, quantity: number) => void;
+}
+
+const InventoryItem: React.FC<InventoryItemProps> = ({ item, onAddToCart }) => {
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [quantity, setQuantity] = useState(1);
 
     const handleItemClick = () => {
@@ -23,8 +30,8 @@ function InventoryItem({ item, onAddToCart }) {
     const imageUrl = item.brand ? `/assets/${imageName}-${brandName}.jpg`.toLowerCase() : `/assets/${imageName}.jpg`.toLowerCase();
     const defaultImageUrl = `/assets/default.jpg`;
 
-    const handleImageError = (e) => {
-        e.target.src = defaultImageUrl;
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        e.currentTarget.src = defaultImageUrl;
     };
 
     return (
@@ -53,52 +60,43 @@ function InventoryItem({ item, onAddToCart }) {
             </Modal>
         </div>
     );
-}
+};
 
-
-function InventoryList() {
+const InventoryList: React.FC = () => {
+    // --- Hooks ---
     const { whichLocation } = useWhichLocation();
-    const [items, setItems] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const { cart, setCart } = useCart();
-
-    const API_URL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : "";
+    const { cart, setCart } = useCart(); // Get typed cart state and setter
+    const [items, setItems] = useState<InventoryItemData[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
 
-    // Create a function to group items with the same name and brand and add their quantities
-    const groupAndSumItems = (items) => {
-        const groupedItems = {};
-        items.forEach((item) => {
-            const key = `${item.item_name}_${item.brand}`;
-            const qty = parseInt(item.qty_available, 10); // Convert to integer
-            if (groupedItems[key]) {
-                groupedItems[key].qty_available += qty;
-            } else {
-                groupedItems[key] = { ...item, qty_available: qty }; // Update the qty_available property
-            }
-        });
-        return Object.values(groupedItems);
-    };
-
-
+    // --- Data Fetching ---
     useEffect(() => {
-        console.log(whichLocation);
-        fetch(`/api/inventory`+ (whichLocation=='e2a' ? 'E2A' : ''))
-            .then(response => response.json())
-            .then(data => {
-                const groupedItems = groupAndSumItems(data);
-                setItems(groupedItems);
-            })
+        LoanService.getInventory(whichLocation)
+            .then(data => { setItems(data); })
             .catch(error => console.error('Error fetching data:', error));
-    }, [API_URL, whichLocation]);
+    }, [whichLocation]);
 
 
-    const handleSearchChange = (newSearchTerm) => {
+    // --- Filtering & Sorting ---
+    const filteredItems = useMemo(() => {
+        console.log(`Filtering with term: "${searchTerm}", categories: [${selectedCategories.join(', ')}]`);
+        return items
+            .filter(item =>
+                (selectedCategories.length === 0 || (item.category && selectedCategories.includes(item.category))) &&
+                (item.item_name?.toLowerCase()).includes(searchTerm.toLowerCase()) && item.qty_available > 0
+            )
+            .sort((a, b) => (a.item_name).localeCompare(b.item_name));
+    }, [items, searchTerm, selectedCategories]);
+
+
+    // --- Event Handlers ---
+    const handleSearchChange = useCallback((newSearchTerm: string) => {
         setSearchTerm(newSearchTerm);
-    };
+    }, []);
 
-    const handleCategoryChange = (category) => {
+    const handleCategoryChange = useCallback((category: string) => {
         if (Array.isArray(category) && category.length === 0) {
             setSelectedCategories([]);
         } else if (selectedCategories.includes(category)) {
@@ -106,57 +104,42 @@ function InventoryList() {
         } else {
             setSelectedCategories([...selectedCategories, category]);
         }
-    };
+    }, []);
 
-    const addToCart = (item, quantityToAdd) => {
+    const addToCart = useCallback((itemToAdd: InventoryItemData, quantityToAdd: number) => {
         // Convert the added quantity to a number to ensure proper calculations
         const quantity = Number(quantityToAdd);
-        const imageUrl = `/assets/${item.item_name.replace(/\//g, '_').replace(/\s+/g, '_')}-${item.brand.replace(/\s+/g, '_')}.jpg`.toLowerCase();
+        const imageUrl = `/assets/${itemToAdd.item_name.replace(/\//g, '_').replace(/\s+/g, '_')}-${itemToAdd.brand.replace(/\s+/g, '_')}.jpg`.toLowerCase();
 
         // Find if the item already exists in the cart
-        const existingItemIndex = cart.findIndex(cartItem => cartItem.item_id === item.item_id);
-
-        // Calculate the total quantity that will be in the cart after adding the new quantity
-        const totalQuantityInCart = existingItemIndex >= 0
-            ? cart[existingItemIndex].qty_borrowed + quantity
-            : quantity;
+        const existingCartItemIndex = cart.findIndex(ci => ci.item_id == itemToAdd.item_id);
+        const totalQuantityAfterAdd = quantity + (existingCartItemIndex >= 0 ? cart[existingCartItemIndex].qty_borrowed : 0);
 
         // Check if adding the item exceeds the available quantity
-        if (totalQuantityInCart > item.qty_available) {
-            alert("Cannot add more items to the cart than available.");
+        if (totalQuantityAfterAdd > itemToAdd.qty_available) {
+            alert(`Cannot add ${quantity} item(s). Only ${itemToAdd.qty_available - totalQuantityAfterAdd} more available.`);
             return; // Stop execution if adding exceeds available stock
         }
 
         // Check if adding a new item type exceeds the limit of 5 different items
-        if (existingItemIndex === -1 && new Set(cart.map(cartItem => cartItem.item_id)).size >= 5) {
-            alert("You cannot add more than 5 different types of items to the cart.");
+        if (existingCartItemIndex === -1 && new Set(cart.map(cartItem => cartItem.item_id)).size >= 5) {
+            alert("Cannot add more than 5 different types of items to the cart.");
             return; // Stop execution if it would exceed 5 different item types
         }
 
-        // Update cart with the new or updated item
-        if (existingItemIndex >= 0) {
-            // Item already exists in cart, update its quantity
-            const updatedCart = cart.map((cartItem, index) =>
-                index === existingItemIndex
-                    ? { ...cartItem, qty_borrowed: cartItem.qty_borrowed + quantity }
-                    : cartItem
-            );
-            setCart(updatedCart);
-        } else {
-            // Item does not exist, add as a new item
-            setCart([...cart, { ...item, qty_borrowed: quantity, imageUrl }]);
-        }
-    };
+        setCart(prevCart => {
+            if (existingCartItemIndex >= 0) {
+                // Item already exists in cart, update its quantity
+                return prevCart.map((cartItem, index) =>
+                    index === existingCartItemIndex ? { ...cartItem, qty_borrowed: cartItem.qty_borrowed + quantity } : cartItem
+                );
+            } else {
+                // Item does not exist, add as a new item
+                return [...cart, { ...itemToAdd, qty_borrowed: quantity, imageUrl, id: cart.length }];
+            }
+        });
+    }, [cart, setCart]);
 
-
-
-    const filteredItems = items
-        .filter(item =>
-            (selectedCategories.length === 0 || selectedCategories.includes(item.category)) &&
-            item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            item.qty_available > 0
-        )
-        .sort((a, b) => a.item_name.localeCompare(b.item_name)); // This line adds sorting by item_name
 
     return (
         <div className="">
@@ -176,6 +159,6 @@ function InventoryList() {
                 </div>
         </div>
     );
-}
+};
 
 export default InventoryList;

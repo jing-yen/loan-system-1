@@ -25,13 +25,9 @@ const Navbar: React.FC = () => {
     const [loanActionStatus, setLoanActionStatus] = useState<LoanActionStatus>(LoanActionStatus.IDLE);
 
     // --- Derived State (for Modal) ---
-    const isSubmitting = useMemo(() => loanActionStatus === LoanActionStatus.LOADING, [loanActionStatus]);
-    const hasError = useMemo(() =>
-        loanActionStatus === LoanActionStatus.ERROR_NOT_FOUND ||
-        loanActionStatus === LoanActionStatus.ERROR_INVALID_STATUS ||
-        loanActionStatus === LoanActionStatus.ERROR_API,
-        [loanActionStatus]
-    );
+    const isSubmitting = loanActionStatus === LoanActionStatus.LOADING;
+    const hasError = [LoanActionStatus.ERROR_NOT_FOUND, LoanActionStatus.ERROR_INVALID_STATUS, LoanActionStatus.ERROR_API].includes(loanActionStatus);
+    
     const modalErrorMessage = useMemo((): string | null => {
         switch (loanActionStatus) {
             case LoanActionStatus.ERROR_NOT_FOUND: return 'Loan ID not found. Please check and try again.';
@@ -43,17 +39,12 @@ const Navbar: React.FC = () => {
             default: return null;
         }
     }, [loanActionStatus, actionType]);
-    const modalTitle = useMemo(() => {
-        if (!actionType) return '';
-        return actionType === 'collect' ? '📦 Collections' : '↩️ Returns';
-    }, [actionType]);
+    const modalTitle = useMemo(() => actionType ? (actionType === 'collect' ? '📦 Collections' : '↩️ Returns') : '', [actionType]);
 
-    // Other Derived State
     const showHostSpecificButtons = useMemo(() => window.location.host !== 'edic.vercel.app', []);
     const showHomeLink = useMemo(() => location.pathname !== '/', [location.pathname]);
 
-    // --- Callbacks / Event Handlers ---
-
+    // --- Callbacks ---
     const openModal = useCallback((type: ActionType) => {
         setActionType(type);
         setIsModalOpen(true);
@@ -76,26 +67,16 @@ const Navbar: React.FC = () => {
 
     const handleModalSubmit = useCallback(async (event?: React.FormEvent<HTMLFormElement>) => {
         event?.preventDefault();
-
-        if (hasError) {
-            closeModal();
-            return;
-        }
-
+        if (hasError) { closeModal(); return; }
         if (!actionType || !loanID) return;
 
         setLoanActionStatus(LoanActionStatus.LOADING);
-
         try {
             const loanDetails: LoanDetails = await LoanService.getLoanDetails(loanID);
             console.log('Loan Details:', loanDetails);
 
             // Validation
-            if (actionType === 'collect' && loanDetails.status !== 'Reserved') {
-                setLoanActionStatus(LoanActionStatus.ERROR_INVALID_STATUS);
-                return;
-            }
-            if (actionType === 'return' && loanDetails.status !== 'Borrowed') {
+            if (actionType === 'collect' && loanDetails.status !== 'Reserved' || actionType === 'return' && loanDetails.status !== 'Borrowed') {
                 setLoanActionStatus(LoanActionStatus.ERROR_INVALID_STATUS);
                 return;
             }
@@ -103,16 +84,12 @@ const Navbar: React.FC = () => {
             // Success
             setLoanActionStatus(LoanActionStatus.SUCCESS);
             const targetPath = actionType === 'collect' ? '/new-collect-form' : '/new-return-form';
-            navigate(targetPath, { state: { loanDetails: loanDetails } });
+            navigate(targetPath, { state: { loanDetails } });
             closeModal();
 
         } catch (error: any) {
             console.error('Error checking loan details:', error);
-            if (error.message === 'Loan not found') {
-                setLoanActionStatus(LoanActionStatus.ERROR_NOT_FOUND);
-            } else {
-                setLoanActionStatus(LoanActionStatus.ERROR_API);
-            }
+            setLoanActionStatus(error.message === 'Loan not found' ? LoanActionStatus.ERROR_NOT_FOUND : LoanActionStatus.ERROR_API);
         }
     }, [actionType, loanID, navigate, closeModal, hasError]);
 
