@@ -1,8 +1,18 @@
 import React from 'react';
 import "../styles/CategoriesBar.css";
 
-function CategoriesBar({ onCategoryChange, selectedCategories }) {
-    const categories = [
+interface Category {
+    name: string;
+    icon: string;
+}
+
+interface CategoriesBarProps {
+    onCategoryChange: (category: string) => void;
+    selectedCategories: string[];
+}
+
+const CategoriesBar: React.FC<CategoriesBarProps> = ({ onCategoryChange, selectedCategories }) => {
+    const categories: Category[] = [
         {
             name: 'Mechanical Tools',
             icon: `${process.env.PUBLIC_URL}/assets/mechanical-tool-icon.jpg`

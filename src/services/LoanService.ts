@@ -1,4 +1,4 @@
-import { InventoryItemData, LoanDetails, LocationType } from '../types';
+import { DashboardInventoryItem, InventoryItemData, LoanDetails, LoanTransaction, LocationType } from '../types';
 import { API_BASE_URL } from '../config';
 
 const groupAndSumItems = (items: InventoryItemData[]): InventoryItemData[] => {
@@ -59,5 +59,63 @@ export const LoanService = {
         const grouped = groupAndSumItems(data);
         console.log('Grouped data:', grouped);
         return grouped;
-    }
+    },
+
+    /**
+     * Fetches all loan transactions.
+     */
+    async getLoanTransactions(): Promise<LoanTransaction[]> {
+        const url = `${API_BASE_URL}/api/loan-transactions`; // Use API_BASE_URL if needed, else relative /api/...
+        console.log(`LoanService: Fetching loan transactions from ${url}`);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+            if (!Array.isArray(data)) throw new Error("Invalid transaction data format.");
+            return data as LoanTransaction[];
+        } catch (error) {
+            console.error(`LoanService: Error fetching loan transactions from ${url} -`, error);
+            throw error instanceof Error ? error : new Error("Unknown error fetching transactions.");
+        }
+    },
+
+    /**
+     * Fetches HUB inventory data specifically for the dashboard.
+     * (Assumes `/api/inventory` returns data suitable for DashboardInventoryItem)
+     */
+    async getHubDashboardInventory(): Promise<DashboardInventoryItem[]> {
+        const url = `${API_BASE_URL}/api/inventory`;
+        console.log(`LoanService: Fetching HUB dashboard inventory from ${url}`);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+            if (!Array.isArray(data)) throw new Error("Invalid inventory data format.");
+            // Add location property for later filtering if API doesn't provide it
+            return (data as DashboardInventoryItem[]).map(item => ({ ...item, location: LocationType.HUB }));
+        } catch (error) {
+            console.error(`LoanService: Error fetching HUB inventory from ${url} -`, error);
+            throw error instanceof Error ? error : new Error("Unknown error fetching HUB inventory.");
+        }
+    },
+
+    /**
+     * Fetches E2A inventory data specifically for the dashboard.
+     * (Assumes `/api/inventoryE2A` returns data suitable for DashboardInventoryItem)
+     */
+    async getE2ADashboardInventory(): Promise<DashboardInventoryItem[]> {
+        const url = `${API_BASE_URL}/api/inventoryE2A`;
+        console.log(`LoanService: Fetching E2A dashboard inventory from ${url}`);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+            if (!Array.isArray(data)) throw new Error("Invalid inventory data format.");
+             // Add location property for later filtering if API doesn't provide it
+            return (data as DashboardInventoryItem[]).map(item => ({ ...item, location: LocationType.E2A }));
+        } catch (error) {
+            console.error(`LoanService: Error fetching E2A inventory from ${url} -`, error);
+            throw error instanceof Error ? error : new Error("Unknown error fetching E2A inventory.");
+        }
+    },
 }

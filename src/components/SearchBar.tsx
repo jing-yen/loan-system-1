@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faTimes } from '@fortawesome/free-solid-svg-icons';
 import "../styles/SearchBar.css"
 
-function SearchBar({ onSearchChange, onCategoryChange, selectedCategories }) {
+interface SearchBarProps {
+    onSearchChange: (searchTerm: string) => void;
+    onCategoryChange: (category: string) => void;
+    selectedCategories: string[];
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearchChange, onCategoryChange, selectedCategories }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const categories = [
@@ -14,19 +20,21 @@ function SearchBar({ onSearchChange, onCategoryChange, selectedCategories }) {
         'Other Equipment',
         'Power Tools'
     ];
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
-        onSearchChange(event.target.value);
-    };
+    
+    const handleSearchInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        const newSearchTerm = event.target.value;
+        setSearchTerm(newSearchTerm);
+        onSearchChange(newSearchTerm);
+    }, [onSearchChange]);
 
-    const clearSearch = () => {
+    const clearSearch = useCallback(() => {
         setSearchTerm('');
         onSearchChange('');
-    };
+    }, [onSearchChange]);
 
-    const handleCategorySelect = (category) => {
+    const handleCategorySelect = useCallback((category: string) => {
         onCategoryChange(category);
-    };
+    }, [onCategoryChange]);
 
     return (
         <div>
@@ -36,7 +44,7 @@ function SearchBar({ onSearchChange, onCategoryChange, selectedCategories }) {
                     type="text"
                     placeholder="Search for equipment..."
                     value={searchTerm}
-                    onChange={handleSearchChange}
+                    onChange={handleSearchInputChange}
                 />
                 {searchTerm && (
                     <button onClick={clearSearch} className="clear-search">

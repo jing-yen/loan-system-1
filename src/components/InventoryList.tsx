@@ -109,8 +109,10 @@ const InventoryList: React.FC = () => {
     const addToCart = useCallback((itemToAdd: InventoryItemData, quantityToAdd: number) => {
         // Convert the added quantity to a number to ensure proper calculations
         const quantity = Number(quantityToAdd);
-        const imageUrl = `/assets/${itemToAdd.item_name.replace(/\//g, '_').replace(/\s+/g, '_')}-${itemToAdd.brand.replace(/\s+/g, '_')}.jpg`.toLowerCase();
-
+        const imageName = itemToAdd.item_name ? itemToAdd.item_name.replace(/\//g, '_').replace(/\s+/g, '_') : 'default';
+        const brandName = itemToAdd.brand ? itemToAdd.brand.replace(/\s+/g, '_') : 'default_brand';
+        const imageUrl = itemToAdd.brand ? `/assets/${imageName}-${brandName}.jpg`.toLowerCase() : `/assets/${imageName}.jpg`.toLowerCase();
+    
         // Find if the item already exists in the cart
         const existingCartItemIndex = cart.findIndex(ci => ci.item_id == itemToAdd.item_id);
         const totalQuantityAfterAdd = quantity + (existingCartItemIndex >= 0 ? cart[existingCartItemIndex].qty_borrowed : 0);

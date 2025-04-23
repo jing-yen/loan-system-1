@@ -175,12 +175,11 @@ const Navbar: React.FC = () => {
                             <div className="cart-header">🛒 My Cart</div>
                             {cart.length > 0 ? (
                                 cart.map((item, index) => (
-                                    <div key={item.id ?? index} className="cart-item"> {/* Use item.id if available, fallback to index */}
+                                    <div key={index} className="cart-item" style={{ position: 'relative' }}> {/* Use item.id if available, fallback to index */}
                                         <img
                                             src={item.imageUrl || defaultImageUrl}
-                                            alt={item.item_name} // Alt text for image
                                             style={{ width: '70px', height: '70px', borderRadius: '8px' }}
-                                            onError={(e) => (e.currentTarget.src = defaultImageUrl)} // Fallback for broken image URLs
+                                            onError={(e) => console.log(item)} // Fallback for broken image URLs
                                         />
                                         <div className="cart-item-details">
                                             <div className="cart-item-name">{item.item_name}</div>
