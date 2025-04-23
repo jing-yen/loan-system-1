@@ -24,7 +24,7 @@ function App() {
     setVerifying(true);
   }
 
-  const handleVerificationResponse = (verified) => {
+  const handleVerificationResponse = (verified: boolean) => {
     console.log('Verification response:', verified);
     setVerifiedByStaff(verified);
     setVerifying(false); 
